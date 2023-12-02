@@ -8,12 +8,12 @@
     "t_array": [
       {
         "field1": "aaaa",
-        "_field2": 123
+        "_field2": 123,
+        "____onlyhere": "HI IM NEW THERE "
       },
       {
-        "field1": true,
-        "field2": "string",
-        "additional": true
+        "field1": "aaaa",
+        "_field2": 123
       }
     ]
   }

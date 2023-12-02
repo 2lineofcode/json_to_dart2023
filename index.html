@@ -29,8 +29,8 @@
                     <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16" height="16"/>
                 </svg> Json2DartModel Generator</a>
 
-                <a href="https://github.com/aditgpt/json_to_dart2023" class="split"><i class="bi bi-github"></i> GitHub</a>
-                <a href="#" class="split">DartModel2Json</a>
+                <a href="https://github.com/aditgpt/json_to_dart2023" target="_blank" class="split"><i class="bi bi-github"></i> GitHub</a>
+                <a href="https://ashamp.github.io/jsonToDartModel" target="_blank" class="split">DartModel2Json</a>
         </header>
         <!-- .header -->
         <div class="divContainer mainContainer">
@@ -38,7 +38,7 @@
             <div class="divContainer leftContainer">
                 <!-- info show only when has warning / invalid code -->
                 <div class="divContainer info"></div>
-                 <!-- Left container -->
+                <!-- Left container -->
                 <div class="divContainer jsonContainer">
                     <!-- JSON container -->
                     <div class="origJsonContainer">
@@ -123,17 +123,26 @@
                         </div>
                     </div> -->
 
-                    <div class="divContainer textInputContainer">
+                    <!-- <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>JsonKey:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="usingJsonKeyCheckBox" id="usingJsonKeyCheckBox"> Json key string</p>
-                            <!-- <p>&nbsp; | &nbsp;</p> -->
-                            <p><input hidden type="checkbox" name="jsonKeyPrivateCheckBox" id="jsonKeyPrivateCheckBox"> </p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="jsonKeyPrivateCheckBox" id="jsonKeyPrivateCheckBox"> Private? </p>
+                        </div>
+                    </div> -->
+
+                    <div class="divContainer textInputContainer">
+                        <div class="divContainer inputTitle">
+                            <p>Store Json:</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isShowJSONSource" id="isShowJSONSource"> Will print original JSON source</p>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="divContainer rightContainer">

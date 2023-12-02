@@ -1,6 +1,6 @@
 /// mapping part importance to maintenance, search 1 of kind bellow
 // - initial jsonTestCase
-// - field keyword protection
+// - field keyword prefix
 // - init variable from checkbox
 // - checkbox default value
 // - Display error information
@@ -11,6 +11,7 @@
 // - fromJson handle array
 // - toJson handle array
 // - handle dimensional array
+// - linesOutput (dart code output)
 
 $(function () {
 	//initialization
@@ -29,21 +30,15 @@ $(function () {
 
 		/// TODO: initial jsonTestCase
 		let jsonTestCase = {
-			"string_field": "json complex case",
-			"double_field": 1e0,
-			"int_field": 123,
-			"bool_field": false,
+			"good_field": "json complex case",
+			"camelField": 1e0,
+			"TitleCase": 123,
+			"1yStartFromDigit": false,
 			"nul_field": null,
-			"@symbol_field": "hi there",
 			"void": "im support for DART protectedKey",
-			"object_field": { "depth1": { "depth2": {} } },
-			"array_field": [
-				{
-					"name": "abdul",
-					"is_recomnd": null
-				}
-			],
-			"dimensional_array": [[[{ "ai_model": 3.5, "maxtrix1": -0.121 }]]]
+			"object_field": { "depth1": { "depth2": { "msg": "dooor" } } },
+			"array_field": [{ "name": "abdul", "is_recomnd": null }],
+			"dimensional_array": [[{ "ai_model": 3.5, "maxtrix1": -0.121 }]]
 		};
 
 		// create the editor
@@ -62,15 +57,15 @@ $(function () {
 			showInfo('Load JSONEditor faild, please try reload');
 		}
 
-		function tryParseJSON(jsonString) {
-			try {
-				var o = JSON.parse(jsonString);
-				if (o && typeof o === "object") {
-					return o;
-				}
-			} catch (e) { }
-			return false;
-		}
+		// function tryParseJSON(jsonString) {
+		// 	try {
+		// 		var o = JSON.parse(jsonString);
+		// 		if (o && typeof o === "object") {
+		// 			return o;
+		// 		}
+		// 	} catch (e) { }
+		// 	return false;
+		// }
 
 		function generate() {
 			hideInfo();
@@ -112,28 +107,40 @@ $(function () {
 				return string.charAt(0).toUpperCase() + string.slice(1);
 			};
 
-			/// TODO: field keyword protection
+			/// TODO: field keyword prefix
 			let dartKeywordDefence = key => {
 				if (typeof key === 'string') {
 					//https://dart.dev/guides/language/language-tour
 					let reservedKeywords = ["num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in", "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null", "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void", "default", "get", "rethrow", "while", "deferred", "hide", "return", "with", "do", "if", "set", "yield"];
+					
+					/// first index is number
 					let isStartWithNum = key.match(/^\d/);
 					if (reservedKeywords.includes(key) || isStartWithNum) {
 						return `x${uppercaseFirst(key)}`;
 					}
 
+					/// first index is symbol
 					let isStartWithSymbol = key.match(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/);
 					if (reservedKeywords.includes(key) || isStartWithSymbol) {
 						return `x${uppercaseFirst(key.substring(1).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g, ''))}`;
 					}
 
-					const isUpperCase = (string) => /^[A-Z]*$/.test(string)
-					if (reservedKeywords.includes(key) || isUpperCase(key)) {
+					/// first index is _
+					if (key.startsWith('_')) {
 						return `x${uppercaseFirst(key)}`;
 					}
 
-					if (key.startsWith('_')) {
-						return `x${uppercaseFirst(key)}`;
+					/// all word is capital
+					if (key === key.toUpperCase()) {
+						const fix = key.toLowerCase();
+						return `${fix}`;
+					}
+
+					/// first index is capital
+					if (key.charAt(0) === key.charAt(0).toUpperCase()) {
+						const pre = key.substring(0, 1).toLowerCase();
+						const fix = key.substring(1);
+						return `${pre}${fix}`;
 					}
 				}
 				return key;
@@ -204,8 +211,8 @@ $(function () {
 					showInfo(` 🐞 WARNING : the property named &nbsp <b> '${key}' </b> &nbsp is an EMPTY array ! parse process is failed !`);
 					let jk = jsonKey.replaceAll('\'', '');
 					return {
-						fromJsonLinesJoined: `${makeBlank(1)}/// \!WARNING: object \`${jk}\` is an EMPTY arraylist\n${makeBlank(1)}if (json['${jk}'] != null) {\n${makeBlank(2)}${jk} = <dynamic>[];\n${makeBlank(2)}json['${jk}'].forEach((v) {\n${makeBlank(3)}${jk}!.add(v);\n${makeBlank(2)}});\n${makeBlank(1)}}\n`,
-						toJsonLinesJoined: `${makeBlank(1)}/// \!WARNING: object \`${jk}\` is an EMPTY arraylist\n${makeBlank(1)}if (${jk} != null) {\n${makeBlank(2)}data['${jk}'] = ${jk}!.map((v) => v.toJson()).toList();\n${makeBlank(1)}}\n`,
+						fromJsonLinesJoined: `${makeBlank(1)}${jk} = json[${jsonKey}] ?? []; // \! <- \`${jk}\` is an EMPTY arraylist\n`,
+						toJsonLinesJoined: `${makeBlank(1)}if (${jk} != null) {\n${makeBlank(2)}data['${jk}'] = ${jk}; // \! <- \`${jk}\` is an EMPTY arraylist \n${makeBlank(1)}}\n`,
 					};
 				}
 
@@ -217,10 +224,8 @@ $(function () {
 
 				if (typeof inner === 'object') {
 					/// * handle dimensional array
-					if (count > 0) {
-						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
-						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
-					}
+					fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
+					toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
 				} else {
 					let toType = 'v';
 					if (typeof inner === 'boolean') {
@@ -236,14 +241,17 @@ $(function () {
 							}
 						}
 					}
+
+					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
+						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${toType});\n${makeBlank(count * 3)}});`);
+						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v);\n${makeBlank(count * 3)}});`);
+					}
 				}
 
 				/// --------
 				/// * handle dimensional array
 				/// --------
 				if(count > 0 ) {
-					count = count;
-                    console.log('count', count)
 					while (count) {
 						fromJsonLines.unshift(`${makeBlank(count * 2)}v.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = ${genericStringGenerator(innerClass, total - count).slice(4)}[];`);
 						fromJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
@@ -332,10 +340,9 @@ $(function () {
 
 				if (shouldConvertSnakeToCamel) className = snakeToCamel(className);
 
-				// lines.push(`/*\r\n${JSON.stringify(jsonObj, null, 2)} \r\n*/\r\n`);
 				lines.push(`class ${className} {`);
 				
-				constructorLines.push(`  ${className}({\n`);
+				constructorLines.push(`  ${className}({`);
 				fromJsonLines.push(`  ${className}.fromJson(Map<String, dynamic> json) {\n`);
 				
 				if (shouldOridJson) fromJsonLines.push(`    __origJson = json;\n`);
@@ -361,7 +368,7 @@ $(function () {
 						}
 
 						jsonKeysLines.push(`const String ${jsonKey} = '${key}';`);
-						constructorLines.push(`    this.${legalKey},\n`);
+						constructorLines.push(`this.${legalKey}, `);
 
 
 						if (element === null) {
@@ -410,7 +417,6 @@ $(function () {
 								toJsonLines.push(`    if (${thisData}${legalKey} != null) {\n      data[${jsonKey}] = ${thisData}${legalKey}${shouldNullSafe ? '!' : ''}.toJson();\n    }\n`);
 							}
 						} else {
-
 							/// TODO: When value is null will replace with default value
 							let toType = `json[${jsonKey}]`;
 							let type = '';
@@ -461,15 +467,21 @@ $(function () {
 					lines.unshift(jsonKeysLines.join('\n'));
 				}
 
-				constructorLines.push(`  });`);
-				fromJsonLines.push(`  }`);
+				constructorLines.push(`});\n`);
+				fromJsonLines.push(`  }\n`);
 				toJsonLines.push(`    return data;\n  }`);
 
 
 				/// TODO: fix empty object
 				if (constructorLines.length < 3) {
 					constructorLines = [];
-					constructorLines.push(`  ${className}();`);
+					constructorLines.push(`  ${className}();\n`);
+				} else if (constructorLines.length < 20) {
+					let suffix = constructorLines.at(constructorLines.length-2).replaceAll(', ','');
+					constructorLines.pop();
+					constructorLines.pop();
+					constructorLines.push(suffix);
+					constructorLines.push(`});\n`);
 				}
 
 				lines.push(propsLines.join(''));
@@ -484,16 +496,41 @@ $(function () {
 				if (shouldOridJson) {
 					lines.push(`  Map<String, dynamic> origJson() => __origJson;`);
 				}
-
+				
 				lines.push(`}\n`);
-				let linesOutput = lines.join('\r\n');
+
+				/// TODO: linesOutput (dart code output)
+				let linesPrefix;
+				let linesSuffix;
+				let linesFixed;
+				if (shouldOridJson) {
+					linesPrefix = lines.slice(-7);
+					linesSuffix = lines.slice(0, -7).reverse();
+					linesFixed = [...linesPrefix, ...linesSuffix];
+				} else {
+					linesPrefix = lines.slice(-6);
+					linesSuffix = lines.slice(0, -6).reverse();
+					linesFixed = [...linesPrefix, ...linesSuffix];
+				}
+				let linesOutput = linesFixed.join('\r\n');
 				return linesOutput;
 			};
 
 			removeSurplusElement(jsonObj);
 
 			let rootClass = $('#classNameTextField').val() ?? 'MyModel';
-			let dartCode = `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : 'MyModel', "")}`;
+
+			let prefixDartCode = ``;
+
+			let isShowJSONSource = $('#isShowJSONSource').prop('checked');
+			if(isShowJSONSource) {
+				prefixDartCode += `/// * \n`;
+				prefixDartCode += `/// * JSON Source: ${JSON.stringify(jsonObj)}\n`;
+				prefixDartCode += `/// * Code generated: https://aditgpt.github.io/json_to_dart2023\n`;
+				prefixDartCode += `/// * \n`;
+			}
+			prefixDartCode += `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : 'MyModel', "")}`;
+			let dartCode = prefixDartCode;
 
 			resultDartCode = dartCode;
 			let highlightDartCode = hljs.highlight('dart', dartCode);
@@ -558,6 +595,7 @@ $(function () {
 		checkBoxBinding('removeToJson', false);
 		checkBoxBinding('removeConstructors', false);
 		checkBoxBinding('isWithDefaultValue', true);
+		checkBoxBinding('isShowJSONSource', false);
 
 		$('#usingJsonKeyCheckBox').on('change', function () {
 			$('#jsonKeyPrivateCheckBox').prop('disabled', !(this.checked));

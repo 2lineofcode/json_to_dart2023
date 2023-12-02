@@ -8,7 +8,7 @@
     "@NamedStartWithSymbol": true,
     ".jpg":"wow~",
     "_underscore": "~special case~",
-    "emptyObject": {},
+    "emptyObject": null,
     "nesObject": {
         "depth1": {
             "depth2": {

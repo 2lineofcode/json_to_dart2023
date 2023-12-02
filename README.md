@@ -16,8 +16,9 @@ click [https://aditgpt.github.io/json_to_dart2023/](https://aditgpt.github.io/js
 - support default value when json == null
 - empty props warning
 - single file
-- all dart keyword protected
+- replace all dart keyword protected
 - instant convert
+- robust
 
 ## FYI
 - when select `Force String Type` , the `bool` type will not convert
