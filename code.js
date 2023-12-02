@@ -8,6 +8,9 @@
 // - When value is null will replace with default value
 // - fix empty object
 // - filename suggestion
+// - fromJson handle array
+// - toJson handle array
+// - handle dimensional array
 
 $(function () {
 	//initialization
@@ -42,8 +45,6 @@ $(function () {
 			],
 			"dimensional_array": [[[{ "ai_model": 3.5, "maxtrix1": -0.121 }]]]
 		};
-
-
 
 		// create the editor
 		const container = document.getElementById("origJsonContainer")
@@ -183,12 +184,9 @@ $(function () {
 						innerClass = 'String';
 					}
 				}
-				return {
-					inner,
-					innerClass,
-					count
-				};
+				return { inner, innerClass, count };
 			};
+
 			// !Get the array cycle sentence
 			let getIterateLines = (arr, className, key, legalKey, jsonKey, shouldNullSafe) => {
 				if (legalKey == 'data') legalKey = 'this.data';
@@ -218,24 +216,18 @@ $(function () {
 				count--;
 
 				if (typeof inner === 'object') {
-					fromJsonLines.push(`${makeBlank(2)}v.forEach((v) {\n${makeBlank(3)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(2)}});`);
-					toJsonLines.push(`${makeBlank(2)}v${
-						shouldNullSafe ? '?' : ''}.forEach((v) {\n${makeBlank(3)}arr${count}.add(v${
-						shouldNullSafe ? '?' : ''}.toJson());\n${makeBlank(2)}});`);
+					/// * handle dimensional array
+					if (count > 0) {
+						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
+						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
+					}
 				} else {
 					let toType = 'v';
 					if (typeof inner === 'boolean') {
 						//we don't handle boolean
 					} else {
-
-						if (forceStringCheckBox) {
-							inner = inner.toString();
-						}
-
-						if (typeof inner === 'string') {
-							toType = 'v.toString()';
-						}
-
+						if (forceStringCheckBox) inner = inner.toString();
+						if (typeof inner === 'string') toType = 'v.toString()';
 						if (typeof inner === 'number') {
 							if (Number.isInteger(inner)) {
 								toType = shouldEnhanceFaultTolerance ? 'int.tryParse(v.toString() ?? \'\')' : 'v.toInt()';
@@ -244,28 +236,66 @@ $(function () {
 							}
 						}
 					}
+				}
+
+				/// --------
+				/// * handle dimensional array
+				/// --------
+				if(count > 0 ) {
+					count = count;
+                    console.log('count', count)
+					while (count) {
+						fromJsonLines.unshift(`${makeBlank(count * 2)}v.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = ${genericStringGenerator(innerClass, total - count).slice(4)}[];`);
+						fromJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
+						toJsonLines.unshift(`${makeBlank(count * 2)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = [];`);
+						toJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
+						count--;
+					}
+
+					let typeCheck = shouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is List)` : '';
+					fromJsonLines.unshift(`${makeBlank(1)}if (json[${jsonKey}] != null${typeCheck}) {\n${makeBlank(2)}final v = json[${jsonKey}];\n${makeBlank(2)}final arr0 = ${genericStringGenerator(innerClass, total).slice(4)}[];`);
+					fromJsonLines.push(`${makeBlank(2)}${legalKey} = arr0;\n    }\n`);
+					toJsonLines.unshift(`    if (${legalKey} != null) {\n      final v = ${legalKey}!;\n      final arr0 = [];`);
+					toJsonLines.push(`      data[${jsonKey}] = arr0;\n    }\n`);
+
+				} else {
+					/// --------
+					/// * fromJson handle array
+					/// --------
+					// ? array primitif
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
-						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${toType});\n${makeBlank(count * 3)}});`);
-						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '!' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v);\n${makeBlank(count * 3)}});`);
+						if (shouldEnhanceFaultTolerance) {
+							fromJsonLines.push(`${makeBlank(1)}if (json[${jsonKey}] is List) {\n${makeBlank(2)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n${makeBlank(1)}}\n`);
+						} else {
+							fromJsonLines.push(`${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n`);
+						}
+					}
+					// ? array object
+					else {
+						if (shouldEnhanceFaultTolerance) {
+							fromJsonLines.push(`${makeBlank(1)}if (json[${jsonKey}] is List) {\n${makeBlank(2)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n${makeBlank(1)}}\n`);
+						} else {
+							fromJsonLines.push(`${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n`);
+						}
+					}
+
+					/// --------
+					/// * toJson handle array
+					/// --------
+					// ? array primitif
+					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
+						toJsonLines.push(`${makeBlank(1)}if (${legalKey} != null) {\n${makeBlank(2)}data[${jsonKey}] = ${legalKey};\n${makeBlank(1)}}\n`);
+					} 
+					
+					// ? array object
+					else {
+						toJsonLines.push(`${makeBlank(1)}if (${legalKey} != null) {\n${makeBlank(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.toJson()).toList();\n${makeBlank(1)}}\n`);
 					}
 				}
-
-				while (count) {
-					fromJsonLines.unshift(`${makeBlank(count * 2)}v.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = ${genericStringGenerator(innerClass, total - count).slice(4)}[];`);
-					fromJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
-					toJsonLines.unshift(`${makeBlank(count * 2)}v${shouldNullSafe ? '!' : ''}.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = [];`);
-					toJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
-					count--;
-				}
-
-				let typeCheck = shouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is List)` : '';
-				fromJsonLines.unshift(`${makeBlank(1)}if (json[${jsonKey}] != null${typeCheck}) {\n${makeBlank(2)}final v = json[${jsonKey}];\n${makeBlank(2)}final arr0 = ${genericStringGenerator(innerClass, total).slice(4)}[];`);
-				fromJsonLines.push(`${makeBlank(1)}${makeBlank(count)}${legalKey} = arr0;\n    }\n`);
-				toJsonLines.unshift(`    if (${legalKey} != null) {\n      final v = ${legalKey};\n      final arr0 = [];`);
-				toJsonLines.push(`      data[${jsonKey}] = arr0;\n    }\n`);
-
+				
 				let fromJsonLinesJoined = fromJsonLines.join('\r\n');
 				let toJsonLinesJoined = toJsonLines.join('\r\n');
+				
 
 				return { fromJsonLinesJoined, toJsonLinesJoined };
 			};
@@ -355,7 +385,7 @@ $(function () {
 
 								/// TODO: null safe in arraylist
 								if (shouldNullSafe) {
-									genericString = genericString.replaceAll('>', '?>') + '?';
+									genericString = genericString.replaceAll('>', '>') + '?';
 								}
 
 								// if array is empty change to type dynamic
