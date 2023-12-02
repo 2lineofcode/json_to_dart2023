@@ -1,25 +1,17 @@
 {
-    "username": "javiercbk",
-    "favouriteInteger": 18,
-    "favouriteDouble": 1.6180,
-    "url": "https://api.github.com/users/javiercbk",
-    "html_url": "https://github.com/javiercbk",
-    "tags": ["dart", "json", "cool"],
-    "randomIntegers": [1, 2, 3],
-    "randomDoubles": [1.1, 2.2, 3.3],
-    "personalInfo": {
-        "firstName": "Javier",
-        "lastName": "Lecuona",
-        "location": "Buenos Aires, Argentina",
-        "phones": [{
-            "type": "work",
-            "number": "123-this-is-a-fake-phone",
-            "shouldCall": false
-        },
+    "string_field":"json complex case",
+    "double_field":1e0,
+    "int_field":123,
+    "bool_field": false,
+    "nul_field": null,
+    "@symbol_field":"hi there",
+    "void": "im support for DART protectedKey",
+    "object_field":{"depth1":{"depth2":{}}},
+    "array_field":[
         {
-            "type": "home",
-            "number": "123-this-is-a-phony-phone",
-            "shouldCall": false
-        }]
-    }
+            "name":"abdul",
+            "is_recomnd": null
+        }
+    ],
+    "dimensional_array": [[[{"ai_model": 3.5, "maxtrix1":-0.121}]]]
 }

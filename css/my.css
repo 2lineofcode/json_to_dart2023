@@ -5,13 +5,12 @@
     text-decoration: none;
 }
 
-/* Create a top navigation bar with a black background color  */
+/* navbar */
 .topnav {
     background-color: #eee;
     overflow: hidden;
 }
 
-/* Style the links inside the navigation bar */
 .topnav a {
     float: left;
     color: #fff;
@@ -24,7 +23,6 @@
     border-top-right-radius: 32px;
 }
 
-/* Create a right-aligned (split) link inside the navigation bar */
 .topnav a.split {
     float: right;
     background-color: #eee;
@@ -33,6 +31,8 @@
 
 }
 
+
+/* content */
 body,
 .mainContent {
     position: absolute;
@@ -61,11 +61,13 @@ body,
     margin-top: 2px;
 }
 
+
+/* info */
 .info {
-    background: #fa7532;
-    color: #ffffff;
+    background: #F8ECCA;
+    color: #000;
     font-size: 13px;
-    padding: 4px;
+    padding: 8px;
 }
 
 .leftContainer {

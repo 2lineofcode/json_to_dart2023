@@ -33,11 +33,12 @@
                 <a href="#" class="split">DartModel2Json</a>
         </header>
         <!-- .header -->
-        <div class="divContainer info"></div>
         <div class="divContainer mainContainer">
             <!-- Main container -->
             <div class="divContainer leftContainer">
-                <!-- Left container -->
+                <!-- info show only when has warning / invalid code -->
+                <div class="divContainer info"></div>
+                 <!-- Left container -->
                 <div class="divContainer jsonContainer">
                     <!-- JSON container -->
                     <div class="origJsonContainer">
@@ -95,14 +96,14 @@
                         </div>
                     </div>
 
-                    <!-- <div class="divContainer textInputContainer">
+                    <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Default Value:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="" id=""> Active</p>
+                            <p><input type="checkbox" name="isWithDefaultValue" id="isWithDefaultValue"> When value is null will replace with default value (null handling)</p>
                         </div>
-                        <div class="divContainer inputContainer">
+                        <!-- <div class="divContainer inputContainer">
                             <input type="text" value="" name="className" id="classNameTextField" placeholder="String">
                         </div>
                         <div class="divContainer inputContainer">
@@ -110,8 +111,8 @@
                         </div>
                         <div class="divContainer inputContainer">
                             <input type="text" value="false" name="className" id="classNameTextField" placeholder="bool">
-                        </div>
-                    </div> -->
+                        </div> -->
+                    </div>
 
                     <!-- <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
@@ -129,17 +130,17 @@
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="usingJsonKeyCheckBox" id="usingJsonKeyCheckBox"> Json key string</p>
                             <!-- <p>&nbsp; | &nbsp;</p> -->
-                            <p><input hidden type="checkbox" name="jsonKeyPrivateCheckBox" id="jsonKeyPrivateCheckBox"> Private</p>
+                            <p><input hidden type="checkbox" name="jsonKeyPrivateCheckBox" id="jsonKeyPrivateCheckBox"> </p>
                         </div>
                     </div>
 
                 </div>
             </div>
             <div class="divContainer rightContainer">
-                <!-- 右容器 -->
+                <!-- Right container -->
                 <div class="divContainer objcHeader">
-                    <!-- 头文件 -->
-                    <pre><code id="dartCode" class="objectivec"></code></pre>
+                    <!-- head File -->
+                    <pre><code id="dartCode"></code></pre>
                 </div>
                 <div class="divContainer copyBtnContaner">
                     <button id="copyFileBtn" class="copyBtn" onclick="showSnackbar()">Copy</button>

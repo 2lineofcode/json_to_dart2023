@@ -1,5 +1,16 @@
+/// mapping part importance to maintenance, search 1 of kind bellow
+// - initial jsonTestCase
+// - field keyword protection
+// - init variable from checkbox
+// - checkbox default value
+// - Display error information
+// - null safe in arraylist
+// - When value is null will replace with default value
+// - fix empty object
+// - filename suggestion
+
 $(function () {
-	//初始化
+	//initialization
 	(function init() {
 
 		function showInfo(info) {
@@ -13,19 +24,26 @@ $(function () {
 
 		let resultDartCode = '';
 
-		/// * initial jsonTestCase
+		/// TODO: initial jsonTestCase
 		let jsonTestCase = {
-			"normalField": "Hello World",
-			"is_support_camel_case": true,
-			"return": "changed to xReturn | DART Protected Key",
-			"1NamedStartWithDigit": 123,
-			"@NamedStartWithSymbol": true,
-			".jpg":"wow~",
-			"_underscore": "~special case~",
-			"demension_array": [[{ "depth": "hi there" }]]
+			"string_field": "json complex case",
+			"double_field": 1e0,
+			"int_field": 123,
+			"bool_field": false,
+			"nul_field": null,
+			"@symbol_field": "hi there",
+			"void": "im support for DART protectedKey",
+			"object_field": { "depth1": { "depth2": {} } },
+			"array_field": [
+				{
+					"name": "abdul",
+					"is_recomnd": null
+				}
+			],
+			"dimensional_array": [[[{ "ai_model": 3.5, "maxtrix1": -0.121 }]]]
 		};
 
-		
+
 
 		// create the editor
 		const container = document.getElementById("origJsonContainer")
@@ -66,7 +84,7 @@ $(function () {
 			let forceStringCheckBox = $('#forceStringCheckBox').prop('checked');
 			let shouldEnhanceFaultTolerance = $('#faultToleranceCheckBox').prop('checked');
 
-			//snake to camel
+			// snake to camel
 			const snakeToCamel = (str) => str.replace(
 				/([-_][a-zA-Z])/g,
 				(group) => group.toUpperCase()
@@ -74,7 +92,7 @@ $(function () {
 					.replace('_', '')
 			);
 
-			//Remove duplicate elements
+			// Remove duplicate elements
 			let removeSurplusElement = (obj) => {
 				if (Array.isArray(obj)) {
 					obj.length = 1;
@@ -87,13 +105,13 @@ $(function () {
 					}
 				}
 			};
-			
-			//Uppercase conversion
+
+			// Uppercase conversion
 			let uppercaseFirst = (string) => {
 				return string.charAt(0).toUpperCase() + string.slice(1);
 			};
-			
-			//DART keyword protection
+
+			/// TODO: field keyword protection
 			let dartKeywordDefence = key => {
 				if (typeof key === 'string') {
 					//https://dart.dev/guides/language/language-tour
@@ -105,7 +123,7 @@ $(function () {
 
 					let isStartWithSymbol = key.match(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/);
 					if (reservedKeywords.includes(key) || isStartWithSymbol) {
-						return `x${uppercaseFirst(key.substring(1).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g,''))}`;
+						return `x${uppercaseFirst(key.substring(1).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g, ''))}`;
 					}
 
 					const isUpperCase = (string) => /^[A-Z]*$/.test(string)
@@ -120,7 +138,7 @@ $(function () {
 				return key;
 			};
 
-			//Generic string generator
+			// Generic string generator
 			let genericStringGenerator = (innerClass, count) => {
 				let genericStrings = [innerClass];
 				while (count) {
@@ -132,7 +150,7 @@ $(function () {
 				return genericString;
 			}
 
-			//!Get the innermost object, type and layer number
+			// !Get the innermost object, type and layer number
 			let getInnerObjInfo = (arr, className) => {
 				let count = 0;
 				let getInnerObj = (arr) => {
@@ -148,7 +166,7 @@ $(function () {
 				let inner = getInnerObj(arr);
 				let innerClass = className;
 				if (typeof inner === 'object') { } else if (typeof inner === 'boolean') {
-					//we don't handle boolean
+					// don't handle boolean
 					innerClass = 'bool';
 				} else {
 					if (typeof inner === 'string') {
@@ -171,13 +189,9 @@ $(function () {
 					count
 				};
 			};
-			//!Get the array cycle sentence
+			// !Get the array cycle sentence
 			let getIterateLines = (arr, className, key, legalKey, jsonKey, shouldNullSafe) => {
-
-				if (legalKey == 'data') {
-					legalKey = 'this.data';
-				}
-
+				if (legalKey == 'data') legalKey = 'this.data';
 				function makeBlank(count) {
 					let str = '';
 					for (let index = 0; index < count + 1; index++) {
@@ -186,19 +200,17 @@ $(function () {
 					return str;
 				};
 
-				let {
-					inner,
-					innerClass,
-					count
-				} = getInnerObjInfo(arr, className);
+				let { inner, innerClass, count } = getInnerObjInfo(arr, className);
+
 				if (inner === undefined || inner === null) {
-					showInfo(` 💬 WARNING : the property named &nbsp <b>'${key}'</b> &nbsp is an EMPTY array ! parse process is failed !`);
-					let jk = jsonKey.replaceAll('\'','');
+					showInfo(` 🐞 WARNING : the property named &nbsp <b> '${key}' </b> &nbsp is an EMPTY array ! parse process is failed !`);
+					let jk = jsonKey.replaceAll('\'', '');
 					return {
 						fromJsonLinesJoined: `${makeBlank(1)}/// \!WARNING: object \`${jk}\` is an EMPTY arraylist\n${makeBlank(1)}if (json['${jk}'] != null) {\n${makeBlank(2)}${jk} = <dynamic>[];\n${makeBlank(2)}json['${jk}'].forEach((v) {\n${makeBlank(3)}${jk}!.add(v);\n${makeBlank(2)}});\n${makeBlank(1)}}\n`,
 						toJsonLinesJoined: `${makeBlank(1)}/// \!WARNING: object \`${jk}\` is an EMPTY arraylist\n${makeBlank(1)}if (${jk} != null) {\n${makeBlank(2)}data['${jk}'] = ${jk}!.map((v) => v.toJson()).toList();\n${makeBlank(1)}}\n`,
 					};
 				}
+
 				let total = count;
 				let fromJsonLines = [];
 				let toJsonLines = [];
@@ -207,18 +219,23 @@ $(function () {
 
 				if (typeof inner === 'object') {
 					fromJsonLines.push(`${makeBlank(2)}v.forEach((v) {\n${makeBlank(3)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(2)}});`);
-					toJsonLines.push(`${makeBlank(2)}v${shouldNullSafe ? '?' : ''}.forEach((v) {\n${makeBlank(3)}arr${count}.add(v${shouldNullSafe ? '?' : ''}.toJson());\n${makeBlank(2)}});`);
+					toJsonLines.push(`${makeBlank(2)}v${
+						shouldNullSafe ? '?' : ''}.forEach((v) {\n${makeBlank(3)}arr${count}.add(v${
+						shouldNullSafe ? '?' : ''}.toJson());\n${makeBlank(2)}});`);
 				} else {
 					let toType = 'v';
 					if (typeof inner === 'boolean') {
 						//we don't handle boolean
 					} else {
+
 						if (forceStringCheckBox) {
 							inner = inner.toString();
 						}
+
 						if (typeof inner === 'string') {
 							toType = 'v.toString()';
 						}
+
 						if (typeof inner === 'number') {
 							if (Number.isInteger(inner)) {
 								toType = shouldEnhanceFaultTolerance ? 'int.tryParse(v.toString() ?? \'\')' : 'v.toInt()';
@@ -249,15 +266,12 @@ $(function () {
 
 				let fromJsonLinesJoined = fromJsonLines.join('\r\n');
 				let toJsonLinesJoined = toJsonLines.join('\r\n');
-				return {
-					fromJsonLinesJoined,
-					toJsonLinesJoined
-				};
+
+				return { fromJsonLinesJoined, toJsonLinesJoined };
 			};
 
-			//!json object to dart
+			// !json object to dart
 			let objToDart = (jsonObj, prefix, baseClass) => {
-
 				if (Array.isArray(jsonObj)) {
 					return objToDart(jsonObj[0], prefix, baseClass);
 				}
@@ -269,97 +283,95 @@ $(function () {
 				let fromJsonLines = [];
 				let toJsonLines = [];
 
-				/// TODO: init settings properties
+				/// TODO: init variable from checkbox
+				let shouldNullSafe = true;
+				let shouldConvertSnakeToCamel = true
+				let shouldOridJson = false;
 				let shouldUsingJsonKey = $('#usingJsonKeyCheckBox').prop('checked');
 				let isJsonKeyPrivate = $('#jsonKeyPrivateCheckBox').prop('checked');
 				let shouldEnhanceFaultTolerance = $('#faultToleranceCheckBox').prop('checked');
-				let shouldNullSafe = true; //$('#nullSafeCheckBox').prop('checked');
-				let shouldConvertSnakeToCamel = true; // $('#camelCheckBox').prop('checked');
-				let shouldOridJson = false;// $('#origJsonCheckBox').prop('checked');
-				// ~ new
+				// additional
 				let removeFromJson = $('#removeFromJson').prop('checked');
 				let removeToJson = $('#removeToJson').prop('checked');
 				let removeConstructors = $('#removeConstructors').prop('checked');
-				
+				let isWithDefaultValue = $('#isWithDefaultValue').prop('checked');
+
+				/// -----------------------------------------------------------------
 
 				let className = `${prefix}${uppercaseFirst(baseClass)}`;
-				
-				if (shouldConvertSnakeToCamel) {
-					className = snakeToCamel(className);
-				}
 
-				lines.push(`class ${className} {`);
+				if (shouldConvertSnakeToCamel) className = snakeToCamel(className);
+
 				// lines.push(`/*\r\n${JSON.stringify(jsonObj, null, 2)} \r\n*/\r\n`);
+				lines.push(`class ${className} {`);
+				
 				constructorLines.push(`  ${className}({\n`);
 				fromJsonLines.push(`  ${className}.fromJson(Map<String, dynamic> json) {\n`);
-				if (shouldOridJson) {
-					fromJsonLines.push(`    __origJson = json;\n`);
-				}
+				
+				if (shouldOridJson) fromJsonLines.push(`    __origJson = json;\n`);
+				
 				toJsonLines.push(`  Map<String, dynamic> toJson() {\n`);
 				toJsonLines.push(`    final data = <String, dynamic>{};\n`);
 
 				for (let key in jsonObj) {
+
 					if (jsonObj.hasOwnProperty(key)) {
 						let element = jsonObj[key];
-
 						let legalKey = dartKeywordDefence(key);
 
-						if (shouldConvertSnakeToCamel) {
-							legalKey = snakeToCamel(legalKey);
-						}
+						if (shouldConvertSnakeToCamel) legalKey = snakeToCamel(legalKey);
 
 						let thisData = '';
-						if (key == 'data') {
-							thisData = 'this.';
-						}
+						if (key == 'data') thisData = 'this.';
 
 						let jsonKey = `'${key}'`;
+
 						if (shouldUsingJsonKey) {
 							jsonKey = `${isJsonKeyPrivate ? '_' : ''}jsonKey${className}${uppercaseFirst(legalKey)}`;
 						}
+
 						jsonKeysLines.push(`const String ${jsonKey} = '${key}';`);
 						constructorLines.push(`    this.${legalKey},\n`);
+
+
 						if (element === null) {
-							//!Display error information
-							showInfo(` 💬 WARNING : the Property named '${key}' is null,which will be treated as String type`);
+							//!Display warning information
+							showInfo(` 🐞 MESSAGE: the Property named &nbsp<b>'${key}'</b>&nbsp is NULL, which will be treated as String type`);
 							element = '';
 						}
-						if (typeof element === 'object') {
 
+						if (typeof element === 'object') {
 							let subClassName = `${className}${uppercaseFirst(key)}`;
+							
 							if (shouldConvertSnakeToCamel) {
 								subClassName = snakeToCamel(subClassName);
 							}
+							
 							if (Array.isArray(element)) {
-								let {
-									inner,
-									innerClass,
-									count
-								} = getInnerObjInfo(element, subClassName);
-								let {
-									fromJsonLinesJoined,
-									toJsonLinesJoined
-								} = getIterateLines(element, subClassName, key, legalKey, jsonKey, shouldNullSafe);
+								let { inner, innerClass, count } = getInnerObjInfo(element, subClassName);
+								let { fromJsonLinesJoined, toJsonLinesJoined } = getIterateLines(element, subClassName, key, legalKey, jsonKey, shouldNullSafe);
+
 								let genericString = genericStringGenerator(innerClass, count);
-								
-								/// TODO: PENTING -> null safe in arraylist
+
+								/// TODO: null safe in arraylist
 								if (shouldNullSafe) {
 									genericString = genericString.replaceAll('>', '?>') + '?';
 								}
-								
-								/// TODO: fixme when array.length = 0
-								if(element[0] != null ){
+
+								// if array is empty change to type dynamic
+								if (element[0] != null) {
 									propsLines.push(`  ${genericString} ${legalKey};\n`);
 								} else {
 									propsLines.push(`  List<dynamic>? ${legalKey};\n`);
 								}
 
-
 								fromJsonLines.push(fromJsonLinesJoined);
 								toJsonLines.push(toJsonLinesJoined);
+
 								if (typeof inner === 'object') {
 									lines.unshift(objToDart(element, className, key));
 								}
+
 							} else {
 								lines.unshift(objToDart(element, className, key));
 								propsLines.push(`  ${subClassName}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
@@ -368,40 +380,53 @@ $(function () {
 								toJsonLines.push(`    if (${thisData}${legalKey} != null) {\n      data[${jsonKey}] = ${thisData}${legalKey}${shouldNullSafe ? '!' : ''}.toJson();\n    }\n`);
 							}
 						} else {
+
+							/// TODO: When value is null will replace with default value
 							let toType = `json[${jsonKey}]`;
 							let type = '';
 							if (typeof element === 'boolean') {
-								//bool is special
-								// toType = `json[${jsonKey}] ?? false`; /// ? default value: boolean
+								if (isWithDefaultValue) {
+									toType = `json[${jsonKey}] ?? false`;
+								}
 								type = 'bool';
 							} else {
 								if (forceStringCheckBox) element = element.toString();
 
-								/// TODO: fix default value
 								if (typeof element === 'string') {
-									toType = `json[${jsonKey}]?.toString() ?? ''`; /// ? default value: string
+									toType = isWithDefaultValue
+										? `json[${jsonKey}] ?? ''`
+										: `json[${jsonKey}]`;
 									type = 'String';
 								} else if (typeof element === 'number') {
 									if (Number.isInteger(element)) {
-										toType = shouldEnhanceFaultTolerance ? `int.tryParse(json[${jsonKey}]?.toString() ?? '')` : `json[${jsonKey}]?.toInt() ?? 0`; /// ? default value: integer
+										toType = shouldEnhanceFaultTolerance
+											? `int.tryParse(json[${jsonKey}] ?? '')`
+											: isWithDefaultValue
+												? `json[${jsonKey}] ?? 0`
+												: `json[${jsonKey}]`;
 										type = 'num';
 									} else {
-										toType = shouldEnhanceFaultTolerance ? `double.tryParse(json[${jsonKey}]?.toString() ?? '')` : `json[${jsonKey}]?.toDouble() ?? 0.0`; /// ? default value: double
+										toType = shouldEnhanceFaultTolerance
+											? `double.tryParse(json[${jsonKey}]?.toString() ?? '')`
+											: isWithDefaultValue
+												? `json[${jsonKey}] ?? 0.0`
+												: `json[${jsonKey}]`;
 										type = 'num';
 									}
 								}
 							}
+							
 							propsLines.push(`  ${type}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
 							fromJsonLines.push(`    ${legalKey} = ${toType};\n`);
 							toJsonLines.push(`    data[${jsonKey}] = ${thisData}${legalKey};\n`);
 						}
 					}
 				}
-				
+
 				if (shouldOridJson) {
 					propsLines.push(`  Map<String, dynamic> __origJson = {};\n`);
 				}
-				
+
 				if (shouldUsingJsonKey) {
 					lines.unshift(jsonKeysLines.join('\n'));
 				}
@@ -411,7 +436,7 @@ $(function () {
 				toJsonLines.push(`    return data;\n  }`);
 
 
-				/// TODO: fix issue empty object
+				/// TODO: fix empty object
 				if (constructorLines.length < 3) {
 					constructorLines = [];
 					constructorLines.push(`  ${className}();`);
@@ -419,13 +444,13 @@ $(function () {
 
 				lines.push(propsLines.join(''));
 
-				if(removeConstructors) constructorLines = [];
+				if (removeConstructors) constructorLines = [];
 				lines.push(constructorLines.join(''));
-				if(removeFromJson) fromJsonLines = [];
+				if (removeFromJson) fromJsonLines = [];
 				lines.push(fromJsonLines.join(''));
-				if(removeToJson) toJsonLines = [];
+				if (removeToJson) toJsonLines = [];
 				lines.push(toJsonLines.join(''));
-				
+
 				if (shouldOridJson) {
 					lines.push(`  Map<String, dynamic> origJson() => __origJson;`);
 				}
@@ -462,9 +487,7 @@ $(function () {
 			});
 		}
 
-		textFieldBinding('classNameTextField', 'MyModel');
-
-		function jsonEditorBinding(tfID, defaultValue) {
+		function jsonEditorBinding() {
 			let str = $.cookie(jsonEditorCachekey);
 			if (str && str.length) {
 				editor.setText(str);
@@ -472,6 +495,7 @@ $(function () {
 				editor.set(jsonTestCase);
 			}
 		}
+
 		jsonEditorBinding();
 
 		function checkBoxBinding(checkBoxID, checked) {
@@ -491,6 +515,7 @@ $(function () {
 		}
 
 		/// * checkbox default value
+		textFieldBinding('classNameTextField', 'MyModel');
 		checkBoxBinding('jsonKeyPrivateCheckBox', true);
 		checkBoxBinding('usingJsonKeyCheckBox', false);
 		checkBoxBinding('nullSafeCheckBox', true);
@@ -502,7 +527,7 @@ $(function () {
 		checkBoxBinding('removeFromJson', false);
 		checkBoxBinding('removeToJson', false);
 		checkBoxBinding('removeConstructors', false);
-
+		checkBoxBinding('isWithDefaultValue', true);
 
 		$('#usingJsonKeyCheckBox').on('change', function () {
 			$('#jsonKeyPrivateCheckBox').prop('disabled', !(this.checked));
@@ -522,6 +547,7 @@ $(function () {
 		$('#copyFileBtn').click(function () {
 			copyToClipboard(resultDartCode);
 		});
-
 	})();
+
+	/// end of file
 });

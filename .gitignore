@@ -1,2 +1,2 @@
-__test.dart
-analysis_options.yaml
+__*.dart
+*.yaml
