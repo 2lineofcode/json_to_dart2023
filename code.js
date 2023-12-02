@@ -15,12 +15,14 @@ $(function () {
 
 		/// * initial jsonTestCase
 		let jsonTestCase = {
-			"no_bug":[
-				{
-					'name': 1
-				}
-			],
-			"bug12":[],
+			"normalField": "Hello World",
+			"is_support_camel_case": true,
+			"return": "changed to xReturn | DART Protected Key",
+			"1NamedStartWithDigit": 123,
+			"@NamedStartWithSymbol": true,
+			".jpg":"wow~",
+			"_underscore": "~special case~",
+			"demension_array": [[{ "depth": "hi there" }]]
 		};
 
 		
@@ -103,11 +105,15 @@ $(function () {
 
 					let isStartWithSymbol = key.match(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/);
 					if (reservedKeywords.includes(key) || isStartWithSymbol) {
-						return `x${uppercaseFirst(key.substring(1))}`;
+						return `x${uppercaseFirst(key.substring(1).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g,''))}`;
 					}
 
 					const isUpperCase = (string) => /^[A-Z]*$/.test(string)
 					if (reservedKeywords.includes(key) || isUpperCase(key)) {
+						return `x${uppercaseFirst(key)}`;
+					}
+
+					if (key.startsWith('_')) {
 						return `x${uppercaseFirst(key)}`;
 					}
 				}
@@ -263,13 +269,18 @@ $(function () {
 				let fromJsonLines = [];
 				let toJsonLines = [];
 
-				/// TODO: maintenance settings properties
+				/// TODO: init settings properties
 				let shouldUsingJsonKey = $('#usingJsonKeyCheckBox').prop('checked');
 				let isJsonKeyPrivate = $('#jsonKeyPrivateCheckBox').prop('checked');
 				let shouldEnhanceFaultTolerance = $('#faultToleranceCheckBox').prop('checked');
 				let shouldNullSafe = true; //$('#nullSafeCheckBox').prop('checked');
 				let shouldConvertSnakeToCamel = true; // $('#camelCheckBox').prop('checked');
-				let shouldOridJson = false; // $('#origJsonCheckBox').prop('checked');
+				let shouldOridJson = false;// $('#origJsonCheckBox').prop('checked');
+				// ~ new
+				let removeFromJson = $('#removeFromJson').prop('checked');
+				let removeToJson = $('#removeToJson').prop('checked');
+				let removeConstructors = $('#removeConstructors').prop('checked');
+				
 
 				let className = `${prefix}${uppercaseFirst(baseClass)}`;
 				
@@ -407,9 +418,14 @@ $(function () {
 				}
 
 				lines.push(propsLines.join(''));
+
+				if(removeConstructors) constructorLines = [];
 				lines.push(constructorLines.join(''));
+				if(removeFromJson) fromJsonLines = [];
 				lines.push(fromJsonLines.join(''));
+				if(removeToJson) toJsonLines = [];
 				lines.push(toJsonLines.join(''));
+				
 				if (shouldOridJson) {
 					lines.push(`  Map<String, dynamic> origJson() => __origJson;`);
 				}
@@ -421,12 +437,14 @@ $(function () {
 
 			removeSurplusElement(jsonObj);
 
-			let rootClass = $('#classNameTextField').val() ?? 'MyEntity';
-			let dartCode = `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : 'MyEntity', "")}`;
+			let rootClass = $('#classNameTextField').val() ?? 'MyModel';
+			let dartCode = `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : 'MyModel', "")}`;
 
 			resultDartCode = dartCode;
 			let highlightDartCode = hljs.highlight('dart', dartCode);
 			$('#dartCode').html(highlightDartCode.value);
+
+			/// * filename suggestion 
 			$('#fileNameTextField').val(rootClass.length > 0 ? rootClass.replace(/([A-Z])/g, "_$1").toLowerCase().substr(1) + '_entity.dart' : '');
 		}
 
@@ -444,7 +462,7 @@ $(function () {
 			});
 		}
 
-		textFieldBinding('classNameTextField', 'MyEntity');
+		textFieldBinding('classNameTextField', 'MyModel');
 
 		function jsonEditorBinding(tfID, defaultValue) {
 			let str = $.cookie(jsonEditorCachekey);
@@ -472,13 +490,19 @@ $(function () {
 			});
 		}
 
-		checkBoxBinding('jsonKeyPrivateCheckBox', false);
+		/// * checkbox default value
+		checkBoxBinding('jsonKeyPrivateCheckBox', true);
 		checkBoxBinding('usingJsonKeyCheckBox', false);
 		checkBoxBinding('nullSafeCheckBox', true);
 		checkBoxBinding('camelCheckBox', true);
 		checkBoxBinding('faultToleranceCheckBox', false);
 		checkBoxBinding('forceStringCheckBox', false);
 		checkBoxBinding('origJsonCheckBox', false);
+		// ~ new
+		checkBoxBinding('removeFromJson', false);
+		checkBoxBinding('removeToJson', false);
+		checkBoxBinding('removeConstructors', false);
+
 
 		$('#usingJsonKeyCheckBox').on('change', function () {
 			$('#jsonKeyPrivateCheckBox').prop('disabled', !(this.checked));
