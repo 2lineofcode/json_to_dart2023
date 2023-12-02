@@ -1,0 +1,262 @@
+{
+    "message": "Successfully retrieve data product detail",
+    "query": "RD337",
+    "data": {
+        "id": 337,
+        "symbol": "RD337",
+        "name": "BNI-AM Indeks IDX30",
+        "type": "Saham",
+        "profile": "",
+        "tradeable": 1,
+        "notbuyable": 0,
+        "status": 1,
+        "dividend_date": null,
+        "robocategory": "equity",
+        "bank_redeem": {
+            "id": 12,
+            "name": "STANDARD CHARTERED",
+            "color": "#0072AA",
+            "icon_url": "https://assets.bibit.id/icons/banks/Standard_Chartered_05042023140038.svg"
+        },
+        "released_date": "2017-12-28",
+        "currency_exchange": {
+            "exchange_rate": 1,
+            "currency": "IDR"
+        },
+        "is_has_dividend": true,
+        "min_asset": 10000,
+        "minbuy": 10000,
+        "minsell": 10000,
+        "executive": {},
+        "fee": {
+            "subscription": {
+                "value": 0,
+                "max_value": null,
+                "type": "percent",
+                "currency": "IDR"
+            },
+            "redemption": {
+                "value": 0,
+                "max_value": null,
+                "type": "percent",
+                "currency": "IDR"
+            },
+            "transfer": {
+                "value": 0,
+                "max_value": null,
+                "type": "percent",
+                "currency": "IDR"
+            },
+            "switch": {
+                "value": 2,
+                "max_value": null,
+                "type": "percent",
+                "currency": "IDR"
+            }
+        },
+        "asset": [
+            {
+                "name": "Kas & Deposito",
+                "percentage": 1
+            },
+            {
+                "name": "Saham",
+                "percentage": 99
+            }
+        ],
+        "holding": [
+            {
+                "symbol": "BBRI",
+                "name": "Bank Rakyat Indonesia (Persero) Tbk.",
+                "annualDividend": 0,
+                "date": "2023-07-31",
+                "clickable": 1,
+                "company_id": 4327,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "BBCA",
+                "name": "Bank Central Asia Tbk.",
+                "annualDividend": 0,
+                "date": "2023-10-31",
+                "clickable": 1,
+                "company_id": 4320,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "BMRI",
+                "name": "Bank Mandiri (Persero) Tbk.",
+                "annualDividend": 0,
+                "date": "2022-08-31",
+                "clickable": 1,
+                "company_id": 4331,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "TLKM",
+                "name": "PT Telkom Indonesia (Persero) Tbk",
+                "annualDividend": 0,
+                "date": "2022-08-31",
+                "clickable": 1,
+                "company_id": 4623,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "ASII",
+                "name": "Astra International Tbk.",
+                "annualDividend": 0,
+                "date": "2022-08-31",
+                "clickable": 1,
+                "company_id": 4547,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "BBNI",
+                "name": "Bank Negara Indonesia (Persero) Tbk.",
+                "annualDividend": 0,
+                "date": "2022-08-31",
+                "clickable": 1,
+                "company_id": 4338,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "AMRT",
+                "name": "Sumber Alfaria Trijaya Tbk.",
+                "annualDividend": 0,
+                "date": "2022-11-30",
+                "clickable": 1,
+                "company_id": 4422,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "GOTO",
+                "name": "GoTo Gojek Tokopedia Tbk.",
+                "annualDividend": 0,
+                "date": "2022-08-31",
+                "clickable": 1,
+                "company_id": 4425,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "CPIN",
+                "name": "Charoen Pokphand Indonesia Tbk",
+                "annualDividend": 0,
+                "date": "2022-12-30",
+                "clickable": 1,
+                "company_id": 5031,
+                "product_type": "Saham",
+                "serie_id": null
+            },
+            {
+                "symbol": "UNTR",
+                "name": "United Tractors Tbk.",
+                "annualDividend": 0,
+                "date": "2022-09-30",
+                "clickable": 1,
+                "company_id": 4571,
+                "product_type": "Saham",
+                "serie_id": null
+            }
+        ],
+        "bank": [
+            {
+                "bank": "BCA",
+                "id": 31,
+                "account": "4585637549",
+                "name": "Reksa Dana Indeks BNI-AM Indeks IDX30"
+            }
+        ],
+        "exitload": [],
+        "investment_manager": {
+            "name": "PT BNI Asset Management",
+            "ojkCode": "NI002",
+            "telepon": "+62 21 29969646",
+            "fax": "+62 21 29969647",
+            "email": "corsec@bni-am.co.id",
+            "url": "www.bni-am.co.id"
+        },
+        "custodian_bank": {
+            "name": "STANDARD CHARTERED",
+            "ojkCode": "SCBJK"
+        },
+        "sharia": false,
+        "etf": false,
+        "index": true,
+        "is_instant_redemption": false,
+        "aum": {
+            "value": 1528624136085.83,
+            "date": "2023-10-01"
+        },
+        "shareholders": [],
+        "expenseratio": {
+            "percentage": 0.0157
+        },
+        "avg_yield": {
+            "date": null,
+            "percentage": null
+        },
+        "cagr": {
+            "1y": -0.06536444648188111,
+            "3y": -0.0022547901319251995,
+            "5y": -0.017714092222153588,
+            "10y": null,
+            "all": -0.031216491665930546
+        },
+        "cagr_adjusted": {
+            "1y": -0.03365260146764537,
+            "3y": 0.015954199235739708,
+            "5y": -0.005157225392324327,
+            "10y": null,
+            "all": -0.020792192646458485
+        },
+        "simplereturn": {
+            "1d": 0.013715740965316359,
+            "1m": 0.0684467508563833,
+            "3m": -0.03461218644615882,
+            "ytd": 0.03126483805097657,
+            "1y": -0.03365260146764537,
+            "3y": 0.04863026805258741,
+            "5y": -0.02552152535668606,
+            "10y": null,
+            "all": -0.11707418519698953
+        },
+        "changesvalue": {
+            "1d": 11.309999999999945,
+            "1m": 53.549999999999955,
+            "3m": -29.970000000000027,
+            "ytd": 26.202122825381934,
+            "1y": -30.09787717461802,
+            "3y": 40.926747290376966,
+            "5y": -23.327950252278924,
+            "10y": null,
+            "all": -118.10795025227901
+        },
+        "nav": {
+            "date": "2023-12-01",
+            "value": 835.91
+        },
+        "riskprofile": "High",
+        "maxdrawdown": {
+            "1y": -0.13031492124189914,
+            "3y": -0.2228623649078194,
+            "5y": -0.4505307898804197,
+            "10y": -0.48795625971269374,
+            "all": -0.48795625971269374
+        },
+        "maxdrawdown_adjusted": {
+            "1y": -0.1033800328723012,
+            "3y": -0.1957748129721058,
+            "5y": -0.445422035770232,
+            "10y": -0.4831954732762356,
+            "all": -0.4831954732762356
+        }
+    }
+}

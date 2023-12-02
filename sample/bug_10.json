@@ -1,0 +1,20 @@
+{
+  "data": {
+    "t_string": "Pong",
+    "t_bool": true,
+    "t_double": 3.21,
+    "t_int": 1,
+    "t_null": null,
+    "t_array": [
+      {
+        "field1": "aaaa",
+        "_field2": 123
+      },
+      {
+        "field1": true,
+        "field2": "string",
+        "additional": true
+      }
+    ]
+  }
+}

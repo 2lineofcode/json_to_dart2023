@@ -1,0 +1,20 @@
+{
+    "aEmp":[],
+    "aPriObj":[
+      1,2,3
+      ],
+    "aObj": [
+      {"name":"a"}  
+    ],
+    "oEmp": {},
+    "oObj": {
+      "name":"na"
+    },
+    "oNesObj": {
+      "oNes1": {
+        "val":"cA",
+        "get":"dart protected named",
+        "void":"dart protected named"
+      }
+    }
+}
