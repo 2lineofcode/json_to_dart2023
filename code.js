@@ -17,24 +17,21 @@ $(function () {
 	//initialization
 	(function init() {
 
-		function showInfo(info) {
-			$('.info').show().html(info);
-		}
+		showInfo = (info) => $('.info').show().html(info);
 
-		function hideInfo() {
-			$('.info').hide();
-		}
+		hideInfo = () => $('.info').hide();
+
 		const jsonEditorCachekey = 'jsonEditor';
 
 		let resultDartCode = '';
 
-		/// TODO: initial jsonTestCase
+		/// * initial jsonTestCase
 		let jsonTestCase = {
 			"message": "hello there!, paste your complex JSON here",
-			"last_update": "dec2023"
+			"last_update": 2023.12
 		};
 
-		// create the editor
+		/// * create the editor
 		const container = document.getElementById("origJsonContainer")
 		const options = {
 			"mode": "code",
@@ -43,26 +40,24 @@ $(function () {
 				generate();
 			},
 		}
+		
 		let editor;
-		try {
-			editor = new JSONEditor(container, options)
-		} catch {
-			showInfo('Load JSONEditor faild, please try reload');
-		}
 
-		function tryParseJSON(jsonString) {
-			try {
-				var o = JSON.parse(jsonString);
-				if (o && typeof o === "object") {
-					return o;
-				}
-			} catch (e) { }
-			return false;
+		try { editor = new JSONEditor(container, options) }
+		catch { showInfo('Load JSONEditor faild, please try reload'); }
+
+		function tab(count) {
+			return '  '.repeat(count + 1);
 		}
 
 		function generate() {
+
+			let isForceToString = $('#isForceToStringCheckbox').prop('checked');
+			let isShouldEnhanceFaultTolerance = $('#isFaultToleranceCheckBox').prop('checked');
+
 			hideInfo();
 			let jsonObj;
+
 			try {
 				jsonObj = editor.get();
 			} catch (error) {
@@ -70,42 +65,38 @@ $(function () {
 				return;
 			}
 
-			let forceStringCheckBox = $('#forceStringCheckBox').prop('checked');
-			let shouldEnhanceFaultTolerance = $('#faultToleranceCheckBox').prop('checked');
-
-			// snake to camel
-			const snakeToCamel = (str) => str.replace(
-				/([-_][a-zA-Z])/g,
-				(group) => group.toUpperCase()
-					.replace('-', '')
-					.replace('_', '')
-			);
+			// Snake to camel
+			const snakeToCamel = (str) => str.replace(/([-_][a-zA-Z])/g, (group) => group.charAt(1).toUpperCase());
 
 			// Remove duplicate elements
-			let removeSurplusElement = (obj) => {
+			const removeSurplusElement = (obj) => {
 				if (Array.isArray(obj)) {
 					obj.length = 1;
 					removeSurplusElement(obj[0]);
 				} else if (typeof obj === 'object') {
 					for (let key in obj) {
 						if (obj.hasOwnProperty(key)) {
-							removeSurplusElement(obj[key])
+							removeSurplusElement(obj[key]);
 						}
 					}
 				}
 			};
-
+			
 			// Uppercase conversion
-			let uppercaseFirst = (string) => {
-				return string.charAt(0).toUpperCase() + string.slice(1);
-			};
+			const uppercaseFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
 
 			/// TODO: field keyword prefix
 			let dartKeywordDefence = key => {
 				if (typeof key === 'string') {
 					//https://dart.dev/guides/language/language-tour
-					let reservedKeywords = ["num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in", "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null", "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void", "default", "get", "rethrow", "while", "deferred", "hide", "return", "with", "do", "if", "set", "yield"];
-					
+					let reservedKeywords = [
+						"num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in", "super", "async", "export",
+						"interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final",
+						"null", "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void", "default", "get", "rethrow", "while", "deferred", "hide", "return",
+						"with", "do", "if", "set", "yield"
+					];
+
 					/// first index is number
 					let isStartWithNum = key.match(/^\d/);
 					if (reservedKeywords.includes(key) || isStartWithNum) {
@@ -139,7 +130,7 @@ $(function () {
 				return key;
 			};
 
-			// Generic string generator
+			/// Generic string generator
 			let genericStringGenerator = (innerClass, count) => {
 				let genericStrings = [innerClass];
 				while (count) {
@@ -154,6 +145,7 @@ $(function () {
 			// !Get the innermost object, type and layer number
 			let getInnerObjInfo = (arr, className) => {
 				let count = 0;
+				
 				let getInnerObj = (arr) => {
 					if (Array.isArray(arr)) {
 						let first = arr[0];
@@ -166,10 +158,16 @@ $(function () {
 
 				let inner = getInnerObj(arr);
 				let innerClass = className;
-				if (typeof inner === 'object') { } else if (typeof inner === 'boolean') {
+
+				/// * isforceToString? 
+				/// * if true => replace to String, except boolean and object
+				if (typeof inner === 'object') {
+					// don't handle object
+				} else if (typeof inner === 'boolean') {
 					// don't handle boolean
 					innerClass = 'bool';
-				} else {
+				} 
+				else {
 					if (typeof inner === 'string') {
 						innerClass = 'String';
 					}
@@ -180,32 +178,24 @@ $(function () {
 							innerClass = 'num';
 						}
 					}
-					if (forceStringCheckBox) {
+					if (isForceToString) {
 						innerClass = 'String';
 					}
 				}
 				return { inner, innerClass, count };
 			};
 
-			// !Get the array cycle sentence
+			// ! Get the array cycle sentence
 			let getIterateLines = (arr, className, key, legalKey, jsonKey, shouldNullSafe) => {
 				if (legalKey == 'data') legalKey = 'this.data';
-				function makeBlank(count) {
-					let str = '';
-					for (let index = 0; index < count + 1; index++) {
-						str += '  ';
-					}
-					return str;
-				};
 
 				let { inner, innerClass, count } = getInnerObjInfo(arr, className);
 
 				if (inner === undefined || inner === null) {
-					showInfo(` 🐞 WARNING : the property named &nbsp <b> '${key}' </b> &nbsp is an EMPTY array ! parse process is failed !`);
-					let jk = jsonKey.replaceAll('\'', '');
+					showInfo(` 🐞 WARNING : the property named &nbsp <b> '${key}' </b> &nbsp is an EMPTY array! which will treated as List(dynamic)`);
 					return {
-						fromJsonLinesJoined: `${makeBlank(1)}${jk} = json[${jsonKey}] ?? []; // \! <- \`${jk}\` is an EMPTY arraylist\n`,
-						toJsonLinesJoined: `${makeBlank(1)}if (${jk} != null) {\n${makeBlank(2)}data['${jk}'] = ${jk}; // \! <- \`${jk}\` is an EMPTY arraylist \n${makeBlank(1)}}\n`,
+						fromJsonLinesJoined: `${tab(1)}${legalKey} = json[${jsonKey}] ?? [];\n`,
+						toJsonLinesJoined: `${tab(1)}if (${legalKey} != null) {\n${tab(2)}data['${legalKey}'] = ${legalKey};\n${tab(1)}}\n`,
 					};
 				}
 
@@ -215,39 +205,38 @@ $(function () {
 
 				count--;
 
-				/// * handle dimensional array [object] => 🔵
+				/// * handle dimensional array [object] => ✅
 				if (typeof inner === 'object') {
 					if (count > 0) {
 						let fprefix = ``;
 
 						if (count > 1) {
-							fprefix += `${makeBlank(1)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
+							fprefix += `${tab(1)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
 						}
-						fprefix += `${makeBlank(1)}${legalKey} = (json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => e == null ? [] : (e as List).map((e) => ${innerClass}.fromJson(e)).toList()).toList())?.cast<List<${innerClass}>>();\n`;
+						fprefix += `${tab(1)}${legalKey} = (json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => e == null ? [] : (e as List).map((e) => ${innerClass}.fromJson(e)).toList()).toList())?.cast<List<${innerClass}>>();\n`;
 						fromJsonLines.push(fprefix);
 
 						let tprefix = ``;
-						tprefix += `${makeBlank(1)}if (${legalKey} != null) {\n`;
+						tprefix += `${tab(1)}if (${legalKey} != null) {\n`;
 						if (count > 1) {
-							tprefix += `${makeBlank(2)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
+							tprefix += `${tab(2)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
 						}
-						tprefix += `${makeBlank(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.map((e) => e.toJson()).toList()).toList();\n`;
-						tprefix += `${makeBlank(1)}}\n`;
+						tprefix += `${tab(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.map((e) => e.toJson()).toList()).toList();\n`;
+						tprefix += `${tab(1)}}\n`;
 						toJsonLines.push(`${tprefix}`);
-
 					}
 				} else {
 					let toType = 'v';
 					if (typeof inner === 'boolean') {
 						//we don't handle boolean
 					} else {
-						if (forceStringCheckBox) inner = inner.toString();
+						if (isForceToString) inner = inner.toString();
 						if (typeof inner === 'string') toType = 'v.toString()';
 						if (typeof inner === 'number') {
 							if (Number.isInteger(inner)) {
-								toType = shouldEnhanceFaultTolerance ? 'int.tryParse(v.toString() ?? \'\')' : 'v.toInt()';
+								toType = isShouldEnhanceFaultTolerance ? 'int.tryParse(v.toString() ?? \'\')' : 'v.toInt()';
 							} else {
-								toType = shouldEnhanceFaultTolerance ? 'double.tryParse(v.toString() ?? \'\')' : 'v.toDouble()';
+								toType = isShouldEnhanceFaultTolerance ? 'double.tryParse(v.toString() ?? \'\')' : 'v.toDouble()';
 							}
 						}
 					}
@@ -256,15 +245,14 @@ $(function () {
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
 						if (count > 0) {
 							let fprefix = ``;
-							fprefix += `${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : ${genericStringGenerator(innerClass, total - 0)}.from(json[${jsonKey}]);\n`;
+							fprefix += `${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : ${genericStringGenerator(innerClass, total)}.from(json[${jsonKey}]);\n`;
 							fromJsonLines.push(fprefix);
 
 							let tPrefix = ``;
-							tPrefix += `${makeBlank(1)}if (${legalKey} != null) {\n`;
-							tPrefix += `${makeBlank(2)}data[${jsonKey}] = ${legalKey};\n`;
-							tPrefix += `${makeBlank(1)}}\n`;
+							tPrefix += `${tab(1)}if (${legalKey} != null) {\n`;
+							tPrefix += `${tab(2)}data[${jsonKey}] = ${legalKey};\n`;
+							tPrefix += `${tab(1)}}\n`;
 							toJsonLines.push(`${tPrefix}`);
-							
 						}
 					}
 				}
@@ -275,44 +263,40 @@ $(function () {
 						count--;
 					}
 				} else {
-					/// --------
+
 					/// * fromJson handle array
-					/// --------
 					// ? array primitif
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
-						if (shouldEnhanceFaultTolerance) {
-							fromJsonLines.push(`${makeBlank(1)}if (json[${jsonKey}] is List) {\n${makeBlank(2)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n${makeBlank(1)}}\n`);
+						if (isShouldEnhanceFaultTolerance) {
+							fromJsonLines.push(`${tab(1)}if (json[${jsonKey}] is List) {\n${tab(2)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n${tab(1)}}\n`);
 						} else {
-							fromJsonLines.push(`${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n`);
+							fromJsonLines.push(`${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n`);
 						}
 					}
 					// ? array object
 					else {
-						if (shouldEnhanceFaultTolerance) {
-							fromJsonLines.push(`${makeBlank(1)}if (json[${jsonKey}] is List) {\n${makeBlank(2)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n${makeBlank(1)}}\n`);
+						if (isShouldEnhanceFaultTolerance) {
+							fromJsonLines.push(`${tab(1)}if (json[${jsonKey}] is List) {\n${tab(2)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n${tab(1)}}\n`);
 						} else {
-							fromJsonLines.push(`${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n`);
+							fromJsonLines.push(`${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => ${className}.fromJson(e)).toList();\n`);
 						}
 					}
 
-					/// --------
 					/// * toJson handle array
-					/// --------
 					// ? array primitif
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
-						toJsonLines.push(`${makeBlank(1)}if (${legalKey} != null) {\n${makeBlank(2)}data[${jsonKey}] = ${legalKey};\n${makeBlank(1)}}\n`);
-					} 
-					
+						toJsonLines.push(`${tab(1)}if (${legalKey} != null) {\n${tab(2)}data[${jsonKey}] = ${legalKey};\n${tab(1)}}\n`);
+					}
+
 					// ? array object
 					else {
-						toJsonLines.push(`${makeBlank(1)}if (${legalKey} != null) {\n${makeBlank(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.toJson()).toList();\n${makeBlank(1)}}\n`);
+						toJsonLines.push(`${tab(1)}if (${legalKey} != null) {\n${tab(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.toJson()).toList();\n${tab(1)}}\n`);
 					}
+
 				}
 				
 				let fromJsonLinesJoined = fromJsonLines.join('\r\n');
 				let toJsonLinesJoined = toJsonLines.join('\r\n');
-				
-
 				return { fromJsonLinesJoined, toJsonLinesJoined };
 			};
 
@@ -328,33 +312,31 @@ $(function () {
 				let constructorLines = [];
 				let fromJsonLines = [];
 				let toJsonLines = [];
+				let fromListLines = [];
+				let copyWithLines = [];
+				let toStringLines = [];
 
 				/// TODO: init variable from checkbox
 				let shouldNullSafe = true;
-				let shouldConvertSnakeToCamel = true
-				let shouldOridJson = false;
-				let shouldUsingJsonKey = $('#usingJsonKeyCheckBox').prop('checked');
-				let isJsonKeyPrivate = $('#jsonKeyPrivateCheckBox').prop('checked');
-				let shouldEnhanceFaultTolerance = $('#faultToleranceCheckBox').prop('checked');
-				// additional
-				let removeFromJson = $('#removeFromJson').prop('checked');
-				let removeToJson = $('#removeToJson').prop('checked');
-				let removeConstructors = $('#removeConstructors').prop('checked');
-				let isWithDefaultValue = $('#isWithDefaultValue').prop('checked');
+				let isShouldEnhanceFaultTolerance = $('#isFaultToleranceCheckBox').prop('checked');
+				let isRemoveFromJson = $('#isRemoveFromJsonCheckBox').prop('checked');
+				let isRemoveToJson = $('#isRemoveToJsonCheckBox').prop('checked');
+				let isRemoveConstructors = $('#isRemoveConstructorsCheckBox').prop('checked');
+				let isWithDefaultValue = $('#isWithDefaultValueCheckBox').prop('checked');
+				let isIncludeCopyWith = $('#isIncludeCopyWithCheckBox').prop('checked');
+				let isIncludeFromList = $('#isIncludeFromListCheckBox').prop('checked');
+				let isIncludeToString = $('#isIncludeToStringCheckBox').prop('checked');
 
 				/// -----------------------------------------------------------------
 
 				let className = `${prefix}${uppercaseFirst(baseClass)}`;
 
-				if (shouldConvertSnakeToCamel) className = snakeToCamel(className);
+				className = snakeToCamel(className);
 
 				lines.push(`class ${className} {`);
 				
 				constructorLines.push(`  ${className}({`);
 				fromJsonLines.push(`  ${className}.fromJson(Map<String, dynamic> json) {\n`);
-				
-				if (shouldOridJson) fromJsonLines.push(`    __origJson = json;\n`);
-				
 				toJsonLines.push(`  Map<String, dynamic> toJson() {\n`);
 				toJsonLines.push(`    final data = <String, dynamic>{};\n`);
 
@@ -364,16 +346,12 @@ $(function () {
 						let element = jsonObj[key];
 						let legalKey = dartKeywordDefence(key);
 
-						if (shouldConvertSnakeToCamel) legalKey = snakeToCamel(legalKey);
+						legalKey = snakeToCamel(legalKey);
 
 						let thisData = '';
 						if (key == 'data') thisData = 'this.';
 
 						let jsonKey = `'${key}'`;
-
-						if (shouldUsingJsonKey) {
-							jsonKey = `${isJsonKeyPrivate ? '_' : ''}jsonKey${className}${uppercaseFirst(legalKey)}`;
-						}
 
 						jsonKeysLines.push(`const String ${jsonKey} = '${key}';`);
 						constructorLines.push(`this.${legalKey}, `);
@@ -381,17 +359,15 @@ $(function () {
 
 						if (element === null) {
 							//!Display warning information
-							showInfo(` 🐞 MESSAGE: the Property named &nbsp<b>'${key}'</b>&nbsp is NULL, which will be treated as String type`);
-							element = '';
+							showInfo(` 🐞 MESSAGE: the Property named &nbsp<b>'${key}'</b>&nbsp is NULL, which will be treated as dynamic`);
+							element = 'dynamic';
 						}
 
 						if (typeof element === 'object') {
 							let subClassName = `${className}${uppercaseFirst(key)}`;
-							
-							if (shouldConvertSnakeToCamel) {
-								subClassName = snakeToCamel(subClassName);
-							}
-							
+
+							subClassName = snakeToCamel(subClassName);
+
 							if (Array.isArray(element)) {
 								let { inner, innerClass, count } = getInnerObjInfo(element, subClassName);
 								let { fromJsonLinesJoined, toJsonLinesJoined } = getIterateLines(element, subClassName, key, legalKey, jsonKey, shouldNullSafe);
@@ -420,37 +396,44 @@ $(function () {
 							} else {
 								lines.unshift(objToDart(element, className, key));
 								propsLines.push(`  ${subClassName}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
-								let typeCheck = shouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is Map)` : '';
+								let typeCheck = isShouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is Map)` : '';
 								fromJsonLines.push(`    ${legalKey} = (json[${jsonKey}] != null${typeCheck}) ? ${subClassName}.fromJson(json[${jsonKey}]) : null;\n`);
 								toJsonLines.push(`    if (${thisData}${legalKey} != null) {\n      data[${jsonKey}] = ${thisData}${legalKey}${shouldNullSafe ? '!' : ''}.toJson();\n    }\n`);
 							}
-						} else {
+						}
+
+						else {
 							/// TODO: When value is null will replace with default value
 							let toType = `json[${jsonKey}]`;
 							let type = '';
 							if (typeof element === 'boolean') {
-								if (isWithDefaultValue) {
-									toType = `json[${jsonKey}] ?? false`;
-								}
+								if (isWithDefaultValue) toType = `json[${jsonKey}] ?? false`;
 								type = 'bool';
 							} else {
-								if (forceStringCheckBox) element = element.toString();
+								if (isForceToString) element = element.toString();
 
-								if (typeof element === 'string') {
-									toType = isWithDefaultValue
-										? `json[${jsonKey}] ?? ''`
-										: `json[${jsonKey}]`;
+								if (element == 'dynamic') {
+									toType = isWithDefaultValue ? `json[${jsonKey}] ?? ''` : `json[${jsonKey}]`;
+									if (isForceToString) type = 'String';
+									else type = 'dynamic';
+								}
+
+								else if (typeof element === 'string') {
+									toType = isWithDefaultValue ? `json[${jsonKey}] ?? ''` : `json[${jsonKey}]`;
 									type = 'String';
-								} else if (typeof element === 'number') {
+								}
+
+								else if (typeof element === 'number') {
 									if (Number.isInteger(element)) {
-										toType = shouldEnhanceFaultTolerance
+										toType = isShouldEnhanceFaultTolerance
 											? `int.tryParse(json[${jsonKey}] ?? '')`
 											: isWithDefaultValue
 												? `json[${jsonKey}] ?? 0`
 												: `json[${jsonKey}]`;
 										type = 'num';
-									} else {
-										toType = shouldEnhanceFaultTolerance
+									}
+									else {
+										toType = isShouldEnhanceFaultTolerance
 											? `double.tryParse(json[${jsonKey}]?.toString() ?? '')`
 											: isWithDefaultValue
 												? `json[${jsonKey}] ?? 0.0`
@@ -460,19 +443,16 @@ $(function () {
 								}
 							}
 							
-							propsLines.push(`  ${type}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
+							if (type == 'dynamic') {
+								propsLines.push(`  ${type} ${legalKey};\n`);
+							} else {
+								propsLines.push(`  ${type}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
+							}
+
 							fromJsonLines.push(`    ${legalKey} = ${toType};\n`);
 							toJsonLines.push(`    data[${jsonKey}] = ${thisData}${legalKey};\n`);
 						}
 					}
-				}
-
-				if (shouldOridJson) {
-					propsLines.push(`  Map<String, dynamic> __origJson = {};\n`);
-				}
-
-				if (shouldUsingJsonKey) {
-					lines.unshift(jsonKeysLines.join('\n'));
 				}
 
 				constructorLines.push(`});\n`);
@@ -494,32 +474,35 @@ $(function () {
 
 				lines.push(propsLines.join(''));
 
-				if (removeConstructors) constructorLines = [];
+				// * isRemoveConstructors?
+				if (isRemoveConstructors) constructorLines = [];
 				lines.push(constructorLines.join(''));
-				if (removeFromJson) fromJsonLines = [];
+				
+				// * isRemoveFromJson?
+				if (isRemoveFromJson) fromJsonLines = [];
 				lines.push(fromJsonLines.join(''));
-				if (removeToJson) toJsonLines = [];
+				
+				// * isRemoveToJson?
+				if (isRemoveToJson) toJsonLines = [];
 				lines.push(toJsonLines.join(''));
 
-				if (shouldOridJson) {
-					lines.push(`  Map<String, dynamic> origJson() => __origJson;`);
-				}
+				// * isIncludeFromList?
+				fromListLines.push(`\n  static List<${className}> fromList(List<Map<String, dynamic>> list) {\n${tab(1)}return list.map((map) => ${className}.fromJson(map)).toList();\n  }`);
+				if (isIncludeFromList) lines.push(fromListLines.join(''));
 				
 				lines.push(`}\n`);
 
-				/// TODO: linesOutput (dart code output)
+				/// * reorder linesOutput (dart code output)
+				let safeLine = 6; 
 				let linesPrefix;
 				let linesSuffix;
 				let linesFixed;
-				if (shouldOridJson) {
-					linesPrefix = lines.slice(-7);
-					linesSuffix = lines.slice(0, -7).reverse();
-					linesFixed = [...linesPrefix, ...linesSuffix];
-				} else {
-					linesPrefix = lines.slice(-6);
-					linesSuffix = lines.slice(0, -6).reverse();
-					linesFixed = [...linesPrefix, ...linesSuffix];
-				}
+
+				if (isIncludeFromList) safeLine++
+
+				linesPrefix = lines.slice(-safeLine);
+				linesSuffix = lines.slice(0, -safeLine).reverse();
+				linesFixed = [...linesPrefix, ...linesSuffix];
 				let linesOutput = linesFixed.join('\r\n');
 				return linesOutput;
 			};
@@ -530,7 +513,7 @@ $(function () {
 
 			let prefixDartCode = ``;
 
-			let isShowJSONSource = $('#isShowJSONSource').prop('checked');
+			let isShowJSONSource = $('#isShowJSONSourceCheckBox').prop('checked');
 			if(isShowJSONSource) {
 				prefixDartCode += `/// * \n`;
 				prefixDartCode += `/// * JSON Source: ${JSON.stringify(jsonObj)}\n`;
@@ -591,24 +574,18 @@ $(function () {
 
 		/// * checkbox default value
 		textFieldBinding('classNameTextField', 'MyModel');
-		checkBoxBinding('jsonKeyPrivateCheckBox', true);
-		checkBoxBinding('usingJsonKeyCheckBox', false);
 		checkBoxBinding('nullSafeCheckBox', true);
-		checkBoxBinding('camelCheckBox', true);
-		checkBoxBinding('faultToleranceCheckBox', false);
-		checkBoxBinding('forceStringCheckBox', false);
-		checkBoxBinding('origJsonCheckBox', false);
-		// ~ new
-		checkBoxBinding('removeFromJson', false);
-		checkBoxBinding('removeToJson', false);
-		checkBoxBinding('removeConstructors', false);
-		checkBoxBinding('isWithDefaultValue', true);
-		checkBoxBinding('isShowJSONSource', false);
+		checkBoxBinding('isFaultToleranceCheckBox', false);
+		checkBoxBinding('isForceToStringCheckbox', false);
+		checkBoxBinding('isRemoveFromJsonCheckBox', false);
+		checkBoxBinding('isRemoveToJsonCheckBox', false);
+		checkBoxBinding('isRemoveConstructorsCheckBox', false);
 
-		$('#usingJsonKeyCheckBox').on('change', function () {
-			$('#jsonKeyPrivateCheckBox').prop('disabled', !(this.checked));
-		});
-		$('#jsonKeyPrivateCheckBox').prop('disabled', !($('#usingJsonKeyCheckBox').prop('checked')));
+		checkBoxBinding('isWithDefaultValueCheckBox', true);
+		checkBoxBinding('isShowJSONSourceCheckBox', false);
+		checkBoxBinding('isIncludeCopyWithCheckBox', false);
+		checkBoxBinding('isIncludeFromListCheckBox', false);
+		checkBoxBinding('isIncludeToStringCheckBox', false);
 
 		generate();
 

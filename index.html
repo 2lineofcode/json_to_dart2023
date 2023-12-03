@@ -67,7 +67,7 @@
                             <p>Fault tolerance:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="faultToleranceCheckBox" id="faultToleranceCheckBox"> 
+                            <p><input type="checkbox" name="isFaultToleranceCheckBox" id="isFaultToleranceCheckBox"> 
                                 Fault tolerance for JSON with mismatched data types</p>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                             <p>Force String Type:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="forceStringCheckBox" id="forceStringCheckBox"> 
+                            <p><input type="checkbox" name="isForceToStringCheckbox" id="isForceToStringCheckbox"> 
                                 Convert all props to String type (Except bool)</p>
                         </div>
                     </div>
@@ -86,13 +86,28 @@
                             <p>Remove:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="removeFromJson" id="removeFromJson"> fromJson</p>
+                            <p><input type="checkbox" name="isRemoveFromJsonCheckBox" id="isRemoveFromJsonCheckBox"> fromJson</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="removeToJson" id="removeToJson"> toJson</p>
+                            <p><input type="checkbox" name="isRemoveToJsonCheckBox" id="isRemoveToJsonCheckBox"> toJson</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="removeConstructors" id="removeConstructors"> Constructors</p>
+                            <p><input type="checkbox" name="isRemoveConstructorsCheckBox" id="isRemoveConstructorsCheckBox"> Constructors</p>
+                        </div>
+                    </div>
+
+                    <div class="divContainer textInputContainer">
+                        <div class="divContainer inputTitle">
+                            <p>Include:</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isIncludeCopyWithCheckBox" id="isIncludeCopyWithCheckBox"> copyWith()</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isIncludeFromListCheckBox" id="isIncludeFromListCheckBox"> fromList()</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isIncludeToStringCheckBox" id="isIncludeToStringCheckBox"> toString()</p>
                         </div>
                     </div>
 
@@ -101,17 +116,8 @@
                             <p>Default Value:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isWithDefaultValue" id="isWithDefaultValue"> When value is null will replace with default value (null handling)</p>
+                            <p><input type="checkbox" name="isWithDefaultValueCheckBox" id="isWithDefaultValueCheckBox"> When value is null will replace with default value (null handling)</p>
                         </div>
-                        <!-- <div class="divContainer inputContainer">
-                            <input type="text" value="" name="className" id="classNameTextField" placeholder="String">
-                        </div>
-                        <div class="divContainer inputContainer">
-                            <input type="text" value="0" name="className" id="classNameTextField" placeholder="num">
-                        </div>
-                        <div class="divContainer inputContainer">
-                            <input type="text" value="false" name="className" id="classNameTextField" placeholder="bool">
-                        </div> -->
                     </div>
 
                     <!-- <div class="divContainer textInputContainer">
@@ -123,24 +129,12 @@
                         </div>
                     </div> -->
 
-                    <!-- <div class="divContainer textInputContainer">
-                        <div class="divContainer inputTitle">
-                            <p>JsonKey:</p>
-                        </div>
-                        <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="usingJsonKeyCheckBox" id="usingJsonKeyCheckBox"> Json key string</p>
-                        </div>
-                        <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="jsonKeyPrivateCheckBox" id="jsonKeyPrivateCheckBox"> Private? </p>
-                        </div>
-                    </div> -->
-
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Store Json:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isShowJSONSource" id="isShowJSONSource"> Will print original JSON source</p>
+                            <p><input type="checkbox" name="isShowJSONSourceCheckBox" id="isShowJSONSourceCheckBox"> Will print original JSON source</p>
                         </div>
                     </div>
                 </div>
