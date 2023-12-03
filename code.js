@@ -173,9 +173,9 @@ $(function () {
 					}
 					if (typeof inner === 'number') {
 						if (Number.isInteger(inner)) {
-							innerClass = 'num';
+							innerClass = isUseNum ? 'num' : 'int';
 						} else {
-							innerClass = 'num';
+							innerClass = isUseNum ? 'num' : 'double';
 						}
 					}
 					if (isForceToString) {
@@ -319,6 +319,7 @@ $(function () {
 				/// TODO: init variable from checkbox
 				let shouldNullSafe = true;
 				let isShouldEnhanceFaultTolerance = $('#isFaultToleranceCheckBox').prop('checked');
+				let isUseNum = $('#isUseNumCheckbox').prop('checked');
 				let isRemoveFromJson = $('#isRemoveFromJsonCheckBox').prop('checked');
 				let isRemoveToJson = $('#isRemoveToJsonCheckBox').prop('checked');
 				let isRemoveConstructors = $('#isRemoveConstructorsCheckBox').prop('checked');
@@ -430,7 +431,8 @@ $(function () {
 											: isWithDefaultValue
 												? `json[${jsonKey}] ?? 0`
 												: `json[${jsonKey}]`;
-										type = 'num';
+										type = isUseNum ? 'num' : 'int';
+
 									}
 									else {
 										toType = isShouldEnhanceFaultTolerance
@@ -438,11 +440,11 @@ $(function () {
 											: isWithDefaultValue
 												? `json[${jsonKey}] ?? 0.0`
 												: `json[${jsonKey}]`;
-										type = 'num';
+										type = isUseNum ? 'num' : 'double';
 									}
 								}
 							}
-							
+
 							if (type == 'dynamic') {
 								propsLines.push(`  ${type} ${legalKey};\n`);
 							} else {
@@ -576,6 +578,7 @@ $(function () {
 		textFieldBinding('classNameTextField', 'MyModel');
 		checkBoxBinding('nullSafeCheckBox', true);
 		checkBoxBinding('isFaultToleranceCheckBox', false);
+		checkBoxBinding('isUseNumCheckbox', true);
 		checkBoxBinding('isForceToStringCheckbox', false);
 		checkBoxBinding('isRemoveFromJsonCheckBox', false);
 		checkBoxBinding('isRemoveToJsonCheckBox', false);

@@ -10,9 +10,9 @@
     <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico?">
     <link rel="stylesheet" href="css/my.css">
     <link rel="stylesheet" href="css/hljseditor.css">
-    <link rel="stylesheet" href="css/jsoneditor.min.css" >
-    <link rel="stylesheet" href="css/jsoneditor.min.css" >
-    <link rel="stylesheet" href="css/snackbar.css" >
+    <link rel="stylesheet" href="css/jsoneditor.min.css">
+    <link rel="stylesheet" href="css/jsoneditor.min.css">
+    <link rel="stylesheet" href="css/snackbar.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>JSON2Dart</title>
 </head>
@@ -25,12 +25,13 @@
         <header class=" topnav">
             <!-- <h2>💎 Json2Dart</h2> -->
             <a class="active" href="/">
-                <svg width="22" height="22">       
-                    <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16" height="16"/>
+                <svg width="22" height="22">
+                    <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16"
+                        height="16" />
                 </svg> Json2DartModel Generator</a>
 
-                <a href="https://github.com/aditgpt/json_to_dart2023" target="_blank" class="split"><i class="bi bi-github"></i> GitHub</a>
-                <a href="#" class="split">DartModel2Json</a>
+            <a href="https://github.com/aditgpt/json_to_dart2023" target="_blank" class="split"><i class="bi bi-github"></i> GitHub</a>
+            <a href="#" class="split">DartModel2Json</a>
         </header>
         <!-- .header -->
         <div class="divContainer mainContainer">
@@ -48,7 +49,8 @@
                     </div>
                 </div>
                 <div class="divContainer inputsContainer">
-                    <!-- Input container -->
+
+                    <!-- Class Name -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle require">
                             <p><b>Class Name:</b></p>
@@ -62,25 +64,41 @@
                         </div>
                     </div>
 
+                    <!-- Fault tolerance -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Fault tolerance:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isFaultToleranceCheckBox" id="isFaultToleranceCheckBox"> 
+                            <p><input type="checkbox" name="isFaultToleranceCheckBox" id="isFaultToleranceCheckBox">
                                 Fault tolerance for JSON with mismatched data types</p>
                         </div>
                     </div>
+
+                    <!-- Use Num -->
+                    <div class="divContainer textInputContainer">
+                        <div class="divContainer inputTitle">
+                            <p>Use Num:</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isUseNumCheckbox" id="isUseNumCheckbox">
+                                Convert all double or int to <font color="blue">num</font> type</p>
+                        </div>
+                    </div>
+
+                    <!-- Force String Type -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Force String Type:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isForceToStringCheckbox" id="isForceToStringCheckbox"> 
-                                Convert all props to String type (Except bool)</p>
+                            <p><input type="checkbox" name="isForceToStringCheckbox" id="isForceToStringCheckbox">
+                                Convert all props to String type (Except <font color="purple">bool</font>)</p>
                         </div>
                     </div>
 
+
+                    <!-- Remove -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Remove:</p>
@@ -96,6 +114,7 @@
                         </div>
                     </div>
 
+                    <!-- Include -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Include:</p>
@@ -111,6 +130,7 @@
                         </div>
                     </div>
 
+                    <!-- Default Value -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Default Value:</p>
@@ -120,6 +140,8 @@
                         </div>
                     </div>
 
+
+                    <!-- Null safe -->
                     <!-- <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Null safe:</p>
@@ -129,6 +151,7 @@
                         </div>
                     </div> -->
 
+                    <!-- Store Json -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
                             <p>Store Json:</p>
