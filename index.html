@@ -28,7 +28,7 @@
                 <svg width="22" height="22">
                     <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16"
                         height="16" />
-                </svg> Json2DartModel Generator</a>
+                </svg> JsonToDartModel Generator</a>
 
             <a href="https://github.com/aditgpt/json_to_dart2023" target="_blank" class="split"><i class="bi bi-github"></i> GitHub</a>
             <a href="#" class="split">DartModel2Json</a>
@@ -82,7 +82,7 @@
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isUseNumCheckbox" id="isUseNumCheckbox">
-                                Convert all double or int to <font color="blue">num</font> type</p>
+                                Convert <font color="purple">double</font> or <font color="purple">int</font> to <font color="blue">num</font> type</p>
                         </div>
                     </div>
 
@@ -93,7 +93,7 @@
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isForceToStringCheckbox" id="isForceToStringCheckbox">
-                                Convert all props to String type (Except <font color="purple">bool</font>)</p>
+                                Convert all props to <font color="green">String</font> type (Except <font color="purple">bool</font>)</p>
                         </div>
                     </div>
 
@@ -111,22 +111,6 @@
                         <!-- <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isIncludeToStringCheckBox" id="isIncludeToStringCheckBox"> toString()</p>
                         </div> -->
-                    </div>
-
-                    <!-- Remove -->
-                    <div class="divContainer textInputContainer">
-                        <div class="divContainer inputTitle">
-                            <p>Remove:</p>
-                        </div>
-                        <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isRemoveFromJsonCheckBox" id="isRemoveFromJsonCheckBox"> fromJson</p>
-                        </div>
-                        <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isRemoveToJsonCheckBox" id="isRemoveToJsonCheckBox"> toJson</p>
-                        </div>
-                        <div class="divContainer inputContainer caption">
-                            <p><input type="checkbox" name="isRemoveConstructorsCheckBox" id="isRemoveConstructorsCheckBox"> Constructors</p>
-                        </div>
                     </div>
 
                     <!-- Default Value -->
@@ -157,6 +141,22 @@
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isShowJSONSourceCheckBox" id="isShowJSONSourceCheckBox"> Will print original JSON source</p>
+                        </div>
+                    </div>
+
+                    <!-- Remove -->
+                    <div class="divContainer textInputContainer">
+                        <div class="divContainer inputTitle">
+                            <p>Remove:</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isRemoveFromJsonCheckBox" id="isRemoveFromJsonCheckBox"> fromJson</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isRemoveToJsonCheckBox" id="isRemoveToJsonCheckBox"> toJson</p>
+                        </div>
+                        <div class="divContainer inputContainer caption">
+                            <p><input type="checkbox" name="isRemoveConstructorsCheckBox" id="isRemoveConstructorsCheckBox"> Constructors</p>
                         </div>
                     </div>
                 </div>
