@@ -4,7 +4,7 @@
  * Author: Annmarie Switzer <https://github.com/annmarie-switzer>
  */
 
- .hljs {
+.hljs {
   color: #2a2c2d;
   background: #e6e6e6;
 }
@@ -91,4 +91,107 @@
 .hljs-template-tag,
 .hljs-meta .hljs-keyword {
   color: #7641bb;
+}
+
+
+
+
+/* dark-mode */
+/**
+ * Panda Syntax Theme for Highlight.js
+ * Based on: https://github.com/tinkertrain/panda-syntax-vscode
+ * Author: Annmarie Switzer <https://github.com/annmarie-switzer>
+ */
+
+.dark-mode .hljs {
+  color: #e6e6e6;
+  background: #2a2c2d;
+}
+
+.dark-mode .hljs-emphasis {
+  font-style: italic;
+}
+
+.dark-mode .hljs-strong {
+  font-weight: bold;
+}
+
+.dark-mode .hljs-link {
+  text-decoration: underline;
+}
+
+.dark-mode .hljs-comment,
+.dark-mode .hljs-quote {
+  color: #bbbbbb;
+  font-style: italic;
+}
+
+.dark-mode .hljs-params {
+  color: #bbbbbb;
+}
+
+.dark-mode .hljs-punctuation,
+.dark-mode .hljs-attr {
+  color: #e6e6e6;
+}
+
+.dark-mode .hljs-selector-tag,
+.dark-mode .hljs-name,
+.dark-mode .hljs-meta {
+  color: #ff4b82;
+}
+
+.dark-mode .hljs-operator,
+.dark-mode .hljs-char.escape_ {
+  color: #b084eb;
+}
+
+.dark-mode .hljs-keyword,
+.dark-mode .hljs-deletion {
+  color: #ff75b5;
+}
+
+.dark-mode .hljs-regexp,
+.dark-mode .hljs-selector-pseudo,
+.dark-mode .hljs-selector-attr,
+.dark-mode .hljs-variable.language_ {
+  color: #ff9ac1;
+}
+
+.dark-mode .hljs-subst,
+.dark-mode .hljs-property,
+.dark-mode .hljs-code,
+.dark-mode .hljs-formula,
+.dark-mode .hljs-section,
+.dark-mode .hljs-title.function_ {
+  color: #45a9f9;
+}
+
+.dark-mode .hljs-string,
+.dark-mode .hljs-symbol,
+.dark-mode .hljs-bullet,
+.dark-mode .hljs-addition,
+.dark-mode .hljs-selector-class,
+.dark-mode .hljs-title.class_,
+.dark-mode .hljs-title.class_.inherited__,
+.dark-mode .hljs-meta .hljs-string {
+  color: #19f9d8;
+}
+
+.dark-mode .hljs-variable,
+.dark-mode .hljs-template-variable,
+.dark-mode .hljs-number,
+.dark-mode .hljs-literal,
+.dark-mode .hljs-type,
+.dark-mode .hljs-link,
+.dark-mode .hljs-built_in,
+.dark-mode .hljs-title,
+.dark-mode .hljs-selector-id,
+.dark-mode .hljs-tag,
+.dark-mode .hljs-doctag,
+.dark-mode .hljs-attribute,
+.dark-mode .hljs-template-tag,
+.dark-mode .hljs-meta .hljs-keyword,
+.dark-mode .hljs-punctuation {
+  color: #ffb86c;
 }

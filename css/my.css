@@ -11,10 +11,14 @@
     overflow: hidden;
 }
 
-.topnav a {
+.dark-mode .topnav {
+    background-color: #222;
+}
+
+.topnav .topnavleft {
     float: left;
-    color: #fff;
-    background-color: #444;
+    color: #000;
+    background-color: #eee;
     text-align: center;
     padding: 8px 16px;
     text-decoration: none;
@@ -23,16 +27,39 @@
     border-top-right-radius: 32px;
 }
 
-.topnav a.split {
-    float: right;
-    background-color: #eee;
-    color: black;
-    font-size: 16px;
+.dark-mode .topnav .topnavleft {
+    background-color: #222;
+    color: #fff;
+}
 
+.topnav .topnavRight {
+    float: right;
+    font-size: 16px;
+    text-align: center;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-end-end-radius: 32px;
+    border-top-right-radius: 32px;
+    color: #000;
+}
+
+.dark-mode .topnav .topnavRight {
+    color: white;
 }
 
 
+
 /* content */
+body {
+    background-color: white;
+    color: black;
+}
+
+.dark-mode {
+    background-color: #222;
+    color: white;
+}
+
 body,
 .mainContent {
     position: absolute;
@@ -56,6 +83,10 @@ body,
     border: 1px solid #cccccc;
 }
 
+.dark-mode .divContainer {
+    border: 1px solid #555;
+}
+
 .mainContainer {
     flex: 1;
     margin-top: 2px;
@@ -70,6 +101,11 @@ body,
     padding: 8px;
 }
 
+.dark-mode .info {
+    background: #686250;
+    color: #fff;
+}
+
 .leftContainer {
     flex: 1;
     flex-direction: column;
@@ -82,11 +118,11 @@ body,
 }
 
 .jsonContainer {
-    flex: 1
+    flex: 1;
 }
 
 .origJsonContainer {
-    flex: 1
+    flex: 1;
 }
 
 .inputsContainer {
@@ -110,15 +146,26 @@ body,
 
 input[type='text'] {
     flex: 1;
+    background-color: white;
+    border: transparent;
 }
+
+.dark-mode input[type='text'] {
+    background-color: #555;
+    color: white;
+}
+
+input[type='text']:disabled {
+    background-color: #ddd;
+}
+
+.dark-mode input[type='text']:disabled {
+    background-color: #222;
+}
+
 
 .objcHeader {
     flex: 2;
-}
-
-.objcImpl {
-    flex: 3;
-    margin-top: 2px;
 }
 
 textarea {
@@ -130,10 +177,6 @@ p {
     align-self: center
 }
 
-#genBtn {
-    width: 60px;
-}
-
 .copyBtnContaner {
     justify-content: center;
     align-items: center;
@@ -143,12 +186,32 @@ p {
     color: green;
 }
 
+.dark-mode .require {
+    color: rgb(143, 182, 86);
+}
+
 .copyBtn {
     width: 100%;
     height: 40px;
     font-weight: bold;
 }
 
+.dark-mode .copyBtn {
+    width: 100%;
+    height: 40px;
+    font-weight: bold;
+    background-color: #444;
+    color: whitesmoke;
+}
+
 .caption {
     font-size: 14px;
+}
+
+.variable {
+    color: blue;
+}
+
+.dark-mode .variable {
+    color: rgb(168, 168, 245);
 }
