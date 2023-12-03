@@ -222,10 +222,12 @@ $(function () {
 
 				count--;
 
+				/// * handle dimensional array [object]
 				if (typeof inner === 'object') {
-					/// * handle dimensional array
-					fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
-					toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
+					if (count > 0) {
+						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
+						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
+					}
 				} else {
 					let toType = 'v';
 					if (typeof inner === 'boolean') {
@@ -242,16 +244,19 @@ $(function () {
 						}
 					}
 
+					/// * handle dimensional array [primitif]
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
-						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${toType});\n${makeBlank(count * 3)}});`);
-						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v);\n${makeBlank(count * 3)}});`);
+						if (count > 0) {
+							fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${toType});\n${makeBlank(count * 3)}});`);
+							toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v);\n${makeBlank(count * 3)}});`);
+						}
 					}
 				}
 
 				/// --------
-				/// * handle dimensional array
+				/// * handle dimensional array [base]
 				/// --------
-				if(count > 0 ) {
+				if (count > 0) {
 					while (count) {
 						fromJsonLines.unshift(`${makeBlank(count * 2)}v.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = ${genericStringGenerator(innerClass, total - count).slice(4)}[];`);
 						fromJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
