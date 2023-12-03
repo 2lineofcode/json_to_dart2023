@@ -30,15 +30,8 @@ $(function () {
 
 		/// TODO: initial jsonTestCase
 		let jsonTestCase = {
-			"good_field": "json complex case",
-			"camelField": 1e0,
-			"TitleCase": 123,
-			"1yStartFromDigit": false,
-			"nul_field": null,
-			"void": "im support for DART protectedKey",
-			"object_field": { "depth1": { "depth2": { "msg": "dooor" } } },
-			"array_field": [{ "name": "abdul", "is_recomnd": null }],
-			"dimensional_array": [[{ "ai_model": 3.5, "maxtrix1": -0.121 }]]
+			"message": "hello there!, paste your complex JSON here",
+			"last_update": "dec2023"
 		};
 
 		// create the editor
