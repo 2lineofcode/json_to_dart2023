@@ -8,6 +8,8 @@
 // - When value is null will replace with default value
 // - fix empty object
 // - filename suggestion
+// - loop start begin
+// - part push fromJson, toJson, copyWith
 // - fromJson handle array
 // - toJson handle array
 // - handle dimensional array
@@ -18,15 +20,12 @@ $(function () {
 	(function init() {
 
 		showInfo = (info) => $('.info').show().html(info);
-
 		hideInfo = () => $('.info').hide();
-
+		
 		const jsonEditorCachekey = 'jsonEditor';
 
-		let resultDartCode = '';
-
 		/// * initial jsonTestCase
-		let jsonTestCase = {
+		const jsonTestCase = {
 			"message": "hello there!, paste your complex JSON here",
 			"last_update": 2023.12
 		};
@@ -40,8 +39,9 @@ $(function () {
 				generate();
 			},
 		}
-		
+
 		let editor;
+		let resultDartCode = '';
 
 		try { editor = new JSONEditor(container, options) }
 		catch { showInfo('Load JSONEditor faild, please try reload'); }
@@ -58,12 +58,8 @@ $(function () {
 			hideInfo();
 			let jsonObj;
 
-			try {
-				jsonObj = editor.get();
-			} catch (error) {
-				$('#dartCode').html(error.toString());
-				return;
-			}
+			try { jsonObj = editor.get(); } 
+			catch (error) { $('#dartCode').html(error.toString()); return; }
 
 			// Snake to camel
 			const snakeToCamel = (str) => str.replace(/([-_][a-zA-Z])/g, (group) => group.charAt(1).toUpperCase());
@@ -75,18 +71,16 @@ $(function () {
 					removeSurplusElement(obj[0]);
 				} else if (typeof obj === 'object') {
 					for (let key in obj) {
-						if (obj.hasOwnProperty(key)) {
-							removeSurplusElement(obj[key]);
-						}
+						if (obj.hasOwnProperty(key)) removeSurplusElement(obj[key]);
 					}
 				}
 			};
-			
+
 			// Uppercase conversion
 			const uppercaseFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 
-			/// TODO: field keyword prefix
+			/// * field keyword prefix
 			let dartKeywordDefence = key => {
 				if (typeof key === 'string') {
 					//https://dart.dev/guides/language/language-tour
@@ -130,7 +124,7 @@ $(function () {
 				return key;
 			};
 
-			/// Generic string generator
+			// ! Generic string generator
 			let genericStringGenerator = (innerClass, count) => {
 				let genericStrings = [innerClass];
 				while (count) {
@@ -142,10 +136,10 @@ $(function () {
 				return genericString;
 			}
 
-			// !Get the innermost object, type and layer number
+			// ! Get the innermost object, type and layer number
 			let getInnerObjInfo = (arr, className) => {
 				let count = 0;
-				
+
 				let getInnerObj = (arr) => {
 					if (Array.isArray(arr)) {
 						let first = arr[0];
@@ -166,12 +160,13 @@ $(function () {
 				} else if (typeof inner === 'boolean') {
 					// don't handle boolean
 					innerClass = 'bool';
-				} 
+				}
 				else {
 					if (typeof inner === 'string') {
 						innerClass = 'String';
 					}
 					if (typeof inner === 'number') {
+						let isUseNum = $('#isUseNumCheckbox').prop('checked');
 						if (Number.isInteger(inner)) {
 							innerClass = isUseNum ? 'num' : 'int';
 						} else {
@@ -294,7 +289,7 @@ $(function () {
 					}
 
 				}
-				
+
 				let fromJsonLinesJoined = fromJsonLines.join('\r\n');
 				let toJsonLinesJoined = toJsonLines.join('\r\n');
 				return { fromJsonLinesJoined, toJsonLinesJoined };
@@ -302,12 +297,12 @@ $(function () {
 
 			// !json object to dart
 			let objToDart = (jsonObj, prefix, baseClass) => {
+
 				if (Array.isArray(jsonObj)) {
 					return objToDart(jsonObj[0], prefix, baseClass);
 				}
 
 				let lines = [];
-				let jsonKeysLines = [];
 				let propsLines = [];
 				let constructorLines = [];
 				let fromJsonLines = [];
@@ -316,7 +311,7 @@ $(function () {
 				let copyWithLines = [];
 				let toStringLines = [];
 
-				/// TODO: init variable from checkbox
+				/// * init variable from checkbox
 				let shouldNullSafe = true;
 				let isShouldEnhanceFaultTolerance = $('#isFaultToleranceCheckBox').prop('checked');
 				let isUseNum = $('#isUseNumCheckbox').prop('checked');
@@ -324,39 +319,35 @@ $(function () {
 				let isRemoveToJson = $('#isRemoveToJsonCheckBox').prop('checked');
 				let isRemoveConstructors = $('#isRemoveConstructorsCheckBox').prop('checked');
 				let isWithDefaultValue = $('#isWithDefaultValueCheckBox').prop('checked');
-				let isIncludeCopyWith = $('#isIncludeCopyWithCheckBox').prop('checked');
 				let isIncludeFromList = $('#isIncludeFromListCheckBox').prop('checked');
+				let isIncludeCopyWith = $('#isIncludeCopyWithCheckBox').prop('checked');
 				let isIncludeToString = $('#isIncludeToStringCheckBox').prop('checked');
 
 				/// -----------------------------------------------------------------
 
 				let className = `${prefix}${uppercaseFirst(baseClass)}`;
-
 				className = snakeToCamel(className);
 
 				lines.push(`class ${className} {`);
-				
+
 				constructorLines.push(`  ${className}({`);
 				fromJsonLines.push(`  ${className}.fromJson(Map<String, dynamic> json) {\n`);
 				toJsonLines.push(`  Map<String, dynamic> toJson() {\n`);
 				toJsonLines.push(`    final data = <String, dynamic>{};\n`);
+				copyWithLines.push(`\n  ${className} copyWith({\n`);
 
+				/// * loop start begin
 				for (let key in jsonObj) {
 
 					if (jsonObj.hasOwnProperty(key)) {
 						let element = jsonObj[key];
 						let legalKey = dartKeywordDefence(key);
-
 						legalKey = snakeToCamel(legalKey);
-
+						let jsonKey = `'${key}'`;
 						let thisData = '';
 						if (key == 'data') thisData = 'this.';
 
-						let jsonKey = `'${key}'`;
-
-						jsonKeysLines.push(`const String ${jsonKey} = '${key}';`);
 						constructorLines.push(`this.${legalKey}, `);
-
 
 						if (element === null) {
 							//!Display warning information
@@ -364,9 +355,10 @@ $(function () {
 							element = 'dynamic';
 						}
 
+						const nullSafeSymbol = (shouldNullSafe && element != 'dynamic') ? '?' : '';
+
 						if (typeof element === 'object') {
 							let subClassName = `${className}${uppercaseFirst(key)}`;
-
 							subClassName = snakeToCamel(subClassName);
 
 							if (Array.isArray(element)) {
@@ -375,20 +367,17 @@ $(function () {
 
 								let genericString = genericStringGenerator(innerClass, count);
 
-								/// TODO: null safe in arraylist
+								/// null safe in arraylist
 								if (shouldNullSafe) {
-									genericString = genericString.replaceAll('>', '>') + '?';
+									genericString = genericString.replaceAll('>', '>') + nullSafeSymbol;
 								}
 
-								// if array is empty change to type dynamic
-								if (element[0] != null) {
-									propsLines.push(`  ${genericString} ${legalKey};\n`);
-								} else {
-									propsLines.push(`  List<dynamic>? ${legalKey};\n`);
-								}
+								propsLines.push(`  ${element[0] != null ? genericString: `List<dynamic>${nullSafeSymbol}`} ${legalKey};\n`);
 
+								/// * part push fromJson, toJson, copyWith (array)
 								fromJsonLines.push(fromJsonLinesJoined);
 								toJsonLines.push(toJsonLinesJoined);
+								copyWithLines.push(`    ${element[0] != null ? genericString: `List<dynamic>${nullSafeSymbol}`} ${legalKey},\n`);
 
 								if (typeof inner === 'object') {
 									lines.unshift(objToDart(element, className, key));
@@ -396,27 +385,31 @@ $(function () {
 
 							} else {
 								lines.unshift(objToDart(element, className, key));
-								propsLines.push(`  ${subClassName}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
+								propsLines.push(`  ${subClassName}${nullSafeSymbol} ${legalKey};\n`);
 								let typeCheck = isShouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is Map)` : '';
+								
+								/// * part push fromJson, toJson, copyWith (object)
 								fromJsonLines.push(`    ${legalKey} = (json[${jsonKey}] != null${typeCheck}) ? ${subClassName}.fromJson(json[${jsonKey}]) : null;\n`);
 								toJsonLines.push(`    if (${thisData}${legalKey} != null) {\n      data[${jsonKey}] = ${thisData}${legalKey}${shouldNullSafe ? '!' : ''}.toJson();\n    }\n`);
+								copyWithLines.push(`    ${subClassName}${nullSafeSymbol} ${legalKey},\n`);
 							}
 						}
 
 						else {
-							/// TODO: When value is null will replace with default value
+							/// * When value is null will replace with default value
 							let toType = `json[${jsonKey}]`;
 							let type = '';
+
 							if (typeof element === 'boolean') {
 								if (isWithDefaultValue) toType = `json[${jsonKey}] ?? false`;
 								type = 'bool';
 							} else {
+
 								if (isForceToString) element = element.toString();
 
 								if (element == 'dynamic') {
 									toType = isWithDefaultValue ? `json[${jsonKey}] ?? ''` : `json[${jsonKey}]`;
-									if (isForceToString) type = 'String';
-									else type = 'dynamic';
+									type =  isForceToString ? 'String' : 'dynamic';
 								}
 
 								else if (typeof element === 'string') {
@@ -448,26 +441,38 @@ $(function () {
 							if (type == 'dynamic') {
 								propsLines.push(`  ${type} ${legalKey};\n`);
 							} else {
-								propsLines.push(`  ${type}${shouldNullSafe ? '?' : ''} ${legalKey};\n`);
+								propsLines.push(`  ${type}${nullSafeSymbol} ${legalKey};\n`);
 							}
 
+							/// * part push fromJson, toJson, copyWith (primitif)
 							fromJsonLines.push(`    ${legalKey} = ${toType};\n`);
 							toJsonLines.push(`    data[${jsonKey}] = ${thisData}${legalKey};\n`);
+							copyWithLines.push(`${tab(1)}${type}${nullSafeSymbol} ${legalKey},\n`);
 						}
 					}
 				}
-
+				
+				/// * part push fromJson, toJson, copyWith (end)
 				constructorLines.push(`});\n`);
 				fromJsonLines.push(`  }\n`);
 				toJsonLines.push(`    return data;\n  }`);
 
+				copyWithLines.push(`  }) => ${className}(\n`);
+				for (let key in jsonObj) {
+					let legalKey = dartKeywordDefence(key);
+					legalKey = snakeToCamel(legalKey);
+					copyWithLines.push(`    ${legalKey}: ${legalKey} ?? this.${legalKey},\n`);
+				}
+				copyWithLines.push(`  );\n`);
 
-				/// TODO: fix empty object
+
+				/// * fix empty object
 				if (constructorLines.length < 3) {
 					constructorLines = [];
 					constructorLines.push(`  ${className}();\n`);
+					copyWithLines = [];
 				} else if (constructorLines.length < 20) {
-					let suffix = constructorLines.at(constructorLines.length-2).replaceAll(', ','');
+					let suffix = constructorLines.at(constructorLines.length - 2).replaceAll(', ', '');
 					constructorLines.pop();
 					constructorLines.pop();
 					constructorLines.push(suffix);
@@ -479,11 +484,11 @@ $(function () {
 				// * isRemoveConstructors?
 				if (isRemoveConstructors) constructorLines = [];
 				lines.push(constructorLines.join(''));
-				
+
 				// * isRemoveFromJson?
 				if (isRemoveFromJson) fromJsonLines = [];
 				lines.push(fromJsonLines.join(''));
-				
+
 				// * isRemoveToJson?
 				if (isRemoveToJson) toJsonLines = [];
 				lines.push(toJsonLines.join(''));
@@ -491,16 +496,20 @@ $(function () {
 				// * isIncludeFromList?
 				fromListLines.push(`\n  static List<${className}> fromList(List<Map<String, dynamic>> list) {\n${tab(1)}return list.map((map) => ${className}.fromJson(map)).toList();\n  }`);
 				if (isIncludeFromList) lines.push(fromListLines.join(''));
-				
+
+				// * isIncludeCopyWith?
+				if (isIncludeCopyWith) lines.push(copyWithLines.join(''));
+
 				lines.push(`}\n`);
 
 				/// * reorder linesOutput (dart code output)
-				let safeLine = 6; 
+				let safeLine = 6;
 				let linesPrefix;
 				let linesSuffix;
 				let linesFixed;
 
 				if (isIncludeFromList) safeLine++
+				if (isIncludeCopyWith) safeLine++
 
 				linesPrefix = lines.slice(-safeLine);
 				linesSuffix = lines.slice(0, -safeLine).reverse();
@@ -516,7 +525,7 @@ $(function () {
 			let prefixDartCode = ``;
 
 			let isShowJSONSource = $('#isShowJSONSourceCheckBox').prop('checked');
-			if(isShowJSONSource) {
+			if (isShowJSONSource) {
 				prefixDartCode += `/// * \n`;
 				prefixDartCode += `/// * JSON Source: ${JSON.stringify(jsonObj)}\n`;
 				prefixDartCode += `/// * Code generated: https://aditgpt.github.io/json_to_dart2023\n`;
@@ -605,5 +614,4 @@ $(function () {
 		});
 	})();
 
-	/// end of file
 });
