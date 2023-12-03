@@ -57,15 +57,15 @@ $(function () {
 			showInfo('Load JSONEditor faild, please try reload');
 		}
 
-		// function tryParseJSON(jsonString) {
-		// 	try {
-		// 		var o = JSON.parse(jsonString);
-		// 		if (o && typeof o === "object") {
-		// 			return o;
-		// 		}
-		// 	} catch (e) { }
-		// 	return false;
-		// }
+		function tryParseJSON(jsonString) {
+			try {
+				var o = JSON.parse(jsonString);
+				if (o && typeof o === "object") {
+					return o;
+				}
+			} catch (e) { }
+			return false;
+		}
 
 		function generate() {
 			hideInfo();
@@ -222,11 +222,26 @@ $(function () {
 
 				count--;
 
-				/// * handle dimensional array [object]
+				/// * handle dimensional array [object] => 🔵
 				if (typeof inner === 'object') {
 					if (count > 0) {
-						fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${className}.fromJson(v));\n${makeBlank(count * 3)}});`);
-						toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v${shouldNullSafe ? '' : ''}.toJson());\n${makeBlank(count * 3)}});`);
+						let fprefix = ``;
+
+						if (count > 1) {
+							fprefix += `${makeBlank(1)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
+						}
+						fprefix += `${makeBlank(1)}${legalKey} = (json[${jsonKey}] == null ? null : (json[${jsonKey}] as List).map((e) => e == null ? [] : (e as List).map((e) => ${innerClass}.fromJson(e)).toList()).toList())?.cast<List<${innerClass}>>();\n`;
+						fromJsonLines.push(fprefix);
+
+						let tprefix = ``;
+						tprefix += `${makeBlank(1)}if (${legalKey} != null) {\n`;
+						if (count > 1) {
+							tprefix += `${makeBlank(2)}/// ! your structure demension depth > 2, maybe need cast manual. if still error after casting, copy this part and fix it in OpenAI \n`;
+						}
+						tprefix += `${makeBlank(2)}data[${jsonKey}] = ${legalKey}?.map((e) => e.map((e) => e.toJson()).toList()).toList();\n`;
+						tprefix += `${makeBlank(1)}}\n`;
+						toJsonLines.push(`${tprefix}`);
+
 					}
 				} else {
 					let toType = 'v';
@@ -244,33 +259,28 @@ $(function () {
 						}
 					}
 
-					/// * handle dimensional array [primitif]
+					/// * handle dimensional array [primitif] => ✅
 					if ((typeof inner === 'string') || (typeof inner === 'number') || (typeof inner === 'boolean')) {
 						if (count > 0) {
-							fromJsonLines.push(`${makeBlank(count * 3)}v.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(${toType});\n${makeBlank(count * 3)}});`);
-							toJsonLines.push(`${makeBlank(count * 3)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 4)}arr${count}.add(v);\n${makeBlank(count * 3)}});`);
+							let fprefix = ``;
+							fprefix += `${makeBlank(1)}${legalKey} = json[${jsonKey}] == null ? null : ${genericStringGenerator(innerClass, total - 0)}.from(json[${jsonKey}]);\n`;
+							fromJsonLines.push(fprefix);
+
+							let tPrefix = ``;
+							tPrefix += `${makeBlank(1)}if (${legalKey} != null) {\n`;
+							tPrefix += `${makeBlank(2)}data[${jsonKey}] = ${legalKey};\n`;
+							tPrefix += `${makeBlank(1)}}\n`;
+							toJsonLines.push(`${tPrefix}`);
+							
 						}
 					}
 				}
 
-				/// --------
 				/// * handle dimensional array [base]
-				/// --------
 				if (count > 0) {
 					while (count) {
-						fromJsonLines.unshift(`${makeBlank(count * 2)}v.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = ${genericStringGenerator(innerClass, total - count).slice(4)}[];`);
-						fromJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
-						toJsonLines.unshift(`${makeBlank(count * 2)}v${shouldNullSafe ? '' : ''}.forEach((v) {\n${makeBlank(count * 3)}final arr${count} = [];`);
-						toJsonLines.push(`${makeBlank(count * 3)}arr${count - 1}.add(arr${count});\n${makeBlank(count * 2)}});`);
 						count--;
 					}
-
-					let typeCheck = shouldEnhanceFaultTolerance ? ` && (json[${jsonKey}] is List)` : '';
-					fromJsonLines.unshift(`${makeBlank(1)}if (json[${jsonKey}] != null${typeCheck}) {\n${makeBlank(2)}final v = json[${jsonKey}];\n${makeBlank(2)}final arr0 = ${genericStringGenerator(innerClass, total).slice(4)}[];`);
-					fromJsonLines.push(`${makeBlank(2)}${legalKey} = arr0;\n    }\n`);
-					toJsonLines.unshift(`    if (${legalKey} != null) {\n      final v = ${legalKey}!;\n      final arr0 = [];`);
-					toJsonLines.push(`      data[${jsonKey}] = arr0;\n    }\n`);
-
 				} else {
 					/// --------
 					/// * fromJson handle array

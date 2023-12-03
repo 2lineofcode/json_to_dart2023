@@ -6,7 +6,7 @@
     "nul_field": null,
     "@symbol_field":"hi there",
     "void": "im support for DART protectedKey",
-    "object_field":{"depth1":{"depth2":{}}},
+    "object_field":{"depth1":{"depth2":{"msg": "hi"}}},
     "array_field":[
         {
             "name":"abdul",
