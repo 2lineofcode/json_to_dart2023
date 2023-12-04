@@ -439,7 +439,7 @@ $(document).ready(function () {
         constructorLines.push(`});\n`);
         fromJsonLines.push(`  }\n`);
         toJsonLines.push(`    return data;\n  }`);
-
+        fromListLines.push(`\n  static List<${className}> fromList(List<Map<String, dynamic>> list) {\n${tab(1)}return list.map((map) => ${className}.fromJson(map)).toList();\n  }`);
         copyWithLines.push(`  }) => ${className}(\n`);
         for (let key in jsonObj) {
           let legalKey = dartKeywordDefence(key);
@@ -447,6 +447,7 @@ $(document).ready(function () {
           copyWithLines.push(`    ${legalKey}: ${legalKey} ?? this.${legalKey},\n`);
         }
         copyWithLines.push(`  );\n`);
+        toStringLines.push(`\n  @override\n  String toString() {\n    return jsonEncode(this);\n  }`);
 
         /// * fix empty object
         if (constructorLines.length < 3) {
@@ -461,28 +462,29 @@ $(document).ready(function () {
           constructorLines.push(`});\n`);
         }
 
+        // * propsLines
         lines.push(propsLines.join(""));
 
         // * isRemoveConstructors?
-        if (isRemoveConstructors) constructorLines = [];
-        lines.push(constructorLines.join(""));
+        if (!isRemoveConstructors) lines.push(constructorLines.join(""));
 
         // * isRemoveFromJson?
-        if (isRemoveFromJson) fromJsonLines = [];
-        lines.push(fromJsonLines.join(""));
+        if (!isRemoveFromJson) lines.push(fromJsonLines.join(""));
 
         // * isRemoveToJson?
-        if (isRemoveToJson) toJsonLines = [];
-        lines.push(toJsonLines.join(""));
+        if (!isRemoveToJson) lines.push(toJsonLines.join(""));
 
         // * isIncludeFromList?
-        fromListLines.push(`\n  static List<${className}> fromList(List<Map<String, dynamic>> list) {\n${tab(1)}return list.map((map) => ${className}.fromJson(map)).toList();\n  }`);
         if (isIncludeFromList) lines.push(fromListLines.join(""));
 
         // * isIncludeCopyWith?
         if (isIncludeCopyWith) lines.push(copyWithLines.join(""));
 
+        // * isIncludeToString?
+        if (isIncludeToString) lines.push(toStringLines.join(""));
+
         lines.push(`}\n`);
+        console.log("lines", lines.length);
 
         /// * reorder linesOutput (dart code output)
         let safeLine = 6;
@@ -490,8 +492,12 @@ $(document).ready(function () {
         let linesSuffix;
         let linesFixed;
 
+        if (isRemoveConstructors) safeLine--;
+        if (isRemoveFromJson) safeLine--;
+        if (isRemoveToJson) safeLine--;
         if (isIncludeFromList) safeLine++;
         if (isIncludeCopyWith) safeLine++;
+        if (isIncludeToString) safeLine++;
 
         linesPrefix = lines.slice(-safeLine);
         linesSuffix = lines.slice(0, -safeLine).reverse();
@@ -507,12 +513,19 @@ $(document).ready(function () {
       let prefixDartCode = ``;
 
       let isShowJSONSource = $("#isShowJSONSourceCheckBox").prop("checked");
+
+      /// * isIncludeToString?
+      let isIncludeToString = $("#isIncludeToStringCheckBox").prop("checked");
+      if (isIncludeToString) prefixDartCode += `import 'dart:convert';\n\n`;
+
+      /// * isShowJSONSource?
       if (isShowJSONSource) {
         prefixDartCode += `/// * \n`;
         prefixDartCode += `/// * JSON Source: ${JSON.stringify(jsonObj)}\n`;
         prefixDartCode += `/// * Code generated: https://2lineofcode.github.io/json_to_dart2023\n`;
         prefixDartCode += `/// * \n`;
       }
+
       prefixDartCode += `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : "MyModel", "")}`;
       let dartCode = prefixDartCode;
 
