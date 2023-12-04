@@ -4,8 +4,7 @@ online tool for convert json to dart code
 
 click [https://aditgpt.github.io/json_to_dart2023/](https://aditgpt.github.io/json_to_dart2023/)
 
-![reademe](img/readme.png)
-![Alt text](image.png)
+![reademe](img/image.png)
 ## Feature
 - online use, without plugin
 - support null safe

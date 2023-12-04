@@ -25,14 +25,15 @@
         <!-- header -->
         <header class=" topnav">
             <!-- <h2>💎 Json2Dart</h2> -->
-            <a class="topnavleft" href="/">
+            <a class="topnavleft" href="#">
                 <svg width="22" height="22">
                     <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16"
                         height="16" />
                 </svg> JsonToDartModel Generator</a>
 
             <a href="https://github.com/aditgpt/json_to_dart2023" target="_blank" class="topnavRight"><i class="bi bi-github"></i> GitHub</a>
-            <a href="#" onclick="toggleDarkMode()" class="topnavRight">Dark Mode</a>
+            <a href="#" onclick="toggleDarkMode()" class="topnavRight"><i id="modeIcon" class="bi"></i></a>
+
         </header>
         <!-- .header -->
         
@@ -68,10 +69,10 @@
                         </div>
                     </div>
 
-                    <!-- Fault tolerance -->
+                    <!-- Fault Tolerance -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
-                            <p>Fault tolerance:</p>
+                            <p>Fault Tolerance:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isFaultToleranceCheckBox" id="isFaultToleranceCheckBox">
@@ -93,7 +94,7 @@
                     <!-- Force String Type -->
                     <div class="divContainer textInputContainer">
                         <div class="divContainer inputTitle">
-                            <p>Force String Type:</p>
+                            <p>Force String:</p>
                         </div>
                         <div class="divContainer inputContainer caption">
                             <p><input type="checkbox" name="isForceToStringCheckbox" id="isForceToStringCheckbox">
