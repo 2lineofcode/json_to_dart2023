@@ -25,8 +25,10 @@ $(function () {
 
     /// * initial jsonTestCase
     const jsonTestCase = {
-      message: "hello there!, paste your complex JSON here",
-      last_update: 2023.12,
+      data: {
+        message: "hello there!, paste your complex JSON here",
+        last_update: 2023.12,
+      },
     };
 
     /// * create the editor
@@ -88,6 +90,7 @@ $(function () {
       let dartKeywordDefence = (key) => {
         if (typeof key === "string") {
           //https://dart.dev/guides/language/language-tour
+          // prettier-ignore
           let reservedKeywords = [
             "num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in",
             "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null",

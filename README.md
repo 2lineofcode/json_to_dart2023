@@ -14,6 +14,7 @@ click [https://aditgpt.github.io/json_to_dart2023/](https://aditgpt.github.io/js
 - support Fault tolerance for JSON with mismatched data types
 - support default value when json == null
 - empty props warning
+- prefix name class
 - single file
 - replace all dart keyword protected
 - instant convert
