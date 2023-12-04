@@ -510,7 +510,7 @@ $(document).ready(function () {
       if (isShowJSONSource) {
         prefixDartCode += `/// * \n`;
         prefixDartCode += `/// * JSON Source: ${JSON.stringify(jsonObj)}\n`;
-        prefixDartCode += `/// * Code generated: https://aditgpt.github.io/json_to_dart2023\n`;
+        prefixDartCode += `/// * Code generated: https://2lineofcode.github.io/json_to_dart2023\n`;
         prefixDartCode += `/// * \n`;
       }
       prefixDartCode += `${objToDart(jsonObj, rootClass.length > 0 ? rootClass : "MyModel", "")}`;

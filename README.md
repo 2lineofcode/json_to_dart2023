@@ -2,30 +2,25 @@
 
 online tool for convert json to dart code
 
-click [https://aditgpt.github.io/json_to_dart2023/](https://aditgpt.github.io/json_to_dart2023/)
-
+click [https://2lineofcode.github.io/json_to_dart2023](https://2lineofcode.github.io/json_to_dart2023)
 ![reademe](img/image.png)
+
 ## Feature
 - online use, without plugin
 - support null safe
 - support multidimensional list
-- support super complex json
+- support complex json
 - support convert all props to String type
 - support Fault tolerance for JSON with mismatched data types
 - support default value when json == null
 - empty props warning
-- prefix name class
+- prefix class name
 - single file
 - replace all dart keyword protected
 - instant convert
 
 ## FYI
 - when select `Force String Type` , the `bool` type will not convert
-
-## Usage
-1. input json string in left textinput
-2. input root class name in left bottom textinput
-3. copy code by button or mouse
 
 ## Explore Complex Json Sample
 click here for more case: [sample](https://github.com/aditgpt/json_to_dart2023/tree/gh-pages/sample)
@@ -44,5 +39,3 @@ click here for more case: [sample](https://github.com/aditgpt/json_to_dart2023/t
     
 }
 ```
-
-
