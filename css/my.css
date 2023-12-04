@@ -1,221 +1,225 @@
 * {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
-    text-decoration: none;
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
 /* navbar */
 .topnav {
-    background-color: #eee;
-    overflow: hidden;
+  background-color: #eee;
+  overflow: hidden;
 }
 
 .dark-mode .topnav {
-    background-color: #222;
+  background-color: #222;
 }
 
 .topnav .topnavleft {
-    float: left;
-    color: #000;
-    background-color: #eee;
-    text-align: center;
-    padding: 8px 16px;
-    text-decoration: none;
-    font-size: 22px;
-    border-end-end-radius: 32px;
-    border-top-right-radius: 32px;
+  float: left;
+  color: #000;
+  background-color: #eee;
+  text-align: center;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-size: 22px;
+  border-end-end-radius: 32px;
+  border-top-right-radius: 32px;
 }
 
 .dark-mode .topnav .topnavleft {
-    background-color: #222;
-    color: #fff;
+  background-color: #222;
+  color: #fff;
 }
 
 .topnav .topnavRight {
-    float: right;
-    font-size: 16px;
-    text-align: center;
-    padding: 8px 16px;
-    text-decoration: none;
-    border-end-end-radius: 32px;
-    border-top-right-radius: 32px;
-    color: #000;
+  float: right;
+  font-size: 16px;
+  text-align: center;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-end-end-radius: 32px;
+  border-top-right-radius: 32px;
+  color: #000;
 }
 
 .dark-mode .topnav .topnavRight {
-    color: white;
+  color: white;
 }
-
-
 
 /* content */
 body {
-    background-color: white;
-    color: black;
+  background-color: white;
+  color: black;
 }
 
 .dark-mode {
-    background-color: #222;
-    color: white;
+  background-color: #222;
+  color: white;
 }
 
 body,
 .mainContent {
-    position: absolute;
-    left: 2px;
-    right: 2px;
-    top: 2px;
-    bottom: 2px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 2px;
+  bottom: 2px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 .mainContent {
-    padding: 2px;
-    flex-direction: column;
-    flex: 1;
+  padding: 2px;
+  flex-direction: column;
+  flex: 1;
 }
 
 .divContainer {
-    display: flex;
-    overflow: auto;
-    padding: 2px;
-    border: 1px solid #cccccc;
+  display: flex;
+  overflow: auto;
+  padding: 2px;
+  border: 1px solid #cccccc;
 }
 
 .dark-mode .divContainer {
-    border: 1px solid #555;
+  border: 1px solid #555;
 }
 
 .mainContainer {
-    flex: 1;
-    margin-top: 2px;
+  flex: 1;
+  margin-top: 2px;
 }
 
-
-/* info */
 .info {
-    background: #F8ECCA;
-    color: #000;
-    font-size: 13px;
-    padding: 8px;
+  background: #f8ecca;
+  color: #000;
+  font-size: 13px;
+  padding: 8px;
 }
 
 .dark-mode .info {
-    background: #686250;
-    color: #fff;
+  background: #686250;
+  color: #fff;
 }
 
 .leftContainer {
-    flex: 1;
-    flex-direction: column;
+  flex: 1;
+  flex-direction: column;
 }
 
 .rightContainer {
-    flex: 1;
-    margin-left: 2px;
-    flex-direction: column
+  flex: 1;
+  margin-left: 2px;
+  flex-direction: column;
 }
 
 .jsonContainer {
-    flex: 1;
+  flex: 1;
 }
 
 .jsoneditor {
-    flex: 1;
+  flex: 1;
 }
 
 .inputsContainer {
-    margin-top: 2px;
-    flex-direction: column;
+  margin-top: 2px;
+  flex-direction: column;
 }
 
 .inputTitle {
-    width: 150px;
-    padding-left: 8px;
+  width: 150px;
+  padding-left: 8px;
 }
 
 .textInputContainer {
-    height: 40px;
+  height: 40px;
 }
 
 .inputContainer {
-    flex: 1;
-    flex-direction: row;
+  flex: 1;
+  flex-direction: row;
 }
 
-input[type='text'] {
-    flex: 1;
-    background-color: white;
-    border: transparent;
+input[type="text"] {
+  flex: 1;
+  background-color: rgba(156, 224, 167, 0.231);
+  padding: 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-.dark-mode input[type='text'] {
-    background-color: #555;
-    color: white;
+.dark-mode input[type="text"] {
+  background-color: #555;
+  color: white;
 }
 
-input[type='text']:disabled {
-    background-color: #ddd;
+.dark-mode ::placeholder {
+  color: #999;
 }
 
-.dark-mode input[type='text']:disabled {
-    background-color: #222;
+input[type="text"]:disabled {
+  background-color: #ddd;
 }
 
+.dark-mode input[type="text"]:disabled {
+  background-color: #222;
+}
 
 .objcHeader {
-    flex: 2;
+  flex: 2;
 }
 
 textarea {
-    resize: none;
-    flex: 1;
+  resize: none;
+  flex: 1;
 }
 
 p {
-    align-self: center
+  align-self: center;
 }
 
 .copyBtnContaner {
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .require {
-    color: green;
+  color: green;
 }
 
 .dark-mode .require {
-    color: rgb(143, 182, 86);
+  color: rgb(143, 182, 86);
 }
 
 .copyBtn {
-    width: 100%;
-    height: 40px;
-    font-weight: bold;
+  width: 100%;
+  height: 40px;
+  font-weight: bold;
 }
 
 .dark-mode .copyBtn {
-    width: 100%;
-    height: 40px;
-    font-weight: bold;
-    background-color: #444;
-    color: whitesmoke;
+  width: 100%;
+  height: 40px;
+  font-weight: bold;
+  background-color: #444;
+  color: whitesmoke;
 }
 
 .caption {
-    font-size: 14px;
+  font-size: 14px;
 }
 
-.variable {
-    color: blue;
+.icon {
+  padding: 8px;
 }
 
-.dark-mode .variable {
-    color: rgb(168, 168, 245);
+.pl {
+  padding-left: 5px;
 }
 
 #jsoneditor {
-    background: white;
+  background: white;
 }
+
+.pointer {cursor: pointer;}

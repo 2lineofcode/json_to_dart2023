@@ -43,6 +43,7 @@ $(document).ready(function () {
       },
     };
 
+    let fileNameSuggestion = "";
     let resultDartCode = "";
     let editor = new JSONEditor(container, options);
     window.jsonEditor = editor;
@@ -186,7 +187,7 @@ $(document).ready(function () {
 
       // ! Get the array cycle sentence
       let getIterateLines = (arr, className, key, legalKey, jsonKey, shouldNullSafe) => {
-        if (legalKey == "data") legalKey = "this.data";
+        if (legalKey == "data") legalKey = "data";
 
         let { inner, innerClass, count } = getInnerObjInfo(arr, className);
 
@@ -542,6 +543,12 @@ $(document).ready(function () {
               .substr(1) + "_entity.dart"
           : ""
       );
+      
+      fileNameSuggestion =
+        rootClass
+          .replace(/([A-Z])/g, "_$1")
+          .toLowerCase()
+          .substr(1) + "_entity.dart";
     }
 
     function textFieldBinding(tfID, defaultValue) {
@@ -599,7 +606,7 @@ $(document).ready(function () {
     checkBoxBinding("isShowJSONSourceCheckBox", false);
     checkBoxBinding("isIncludeCopyWithCheckBox", false);
     checkBoxBinding("isIncludeFromListCheckBox", false);
-    checkBoxBinding("isIncludeToStringCheckBox", false);
+    checkBoxBinding("isIncludeToStringCheckBox", true);
 
     generate();
 
@@ -613,6 +620,10 @@ $(document).ready(function () {
 
     $("#copyFileBtn").click(function () {
       copyToClipboard(resultDartCode);
+    });
+
+    $("#copyFileNameBtn").click(function () {
+      copyToClipboard(fileNameSuggestion);
     });
   })();
 });
