@@ -9,10 +9,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico?">
     <link rel="stylesheet" href="css/my.css">
-    <link rel="stylesheet" href="css/hljseditor.css">
-    <link rel="stylesheet" href="css/jsoneditor.min.css">
-    <link rel="stylesheet" href="css/jsoneditorstyle.css">
     <link rel="stylesheet" href="css/snackbar.css">
+    <link rel="stylesheet" href="css/hljseditor.css">
+
+    <!-- json editor -->
+    <link rel="stylesheet" href="css/jsoneditor.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.4/jsoneditor.css" rel="stylesheet" type="text/css">
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.4/jsoneditor.min.js></script>
+    <script src="https://rawgit.com/thlorenz/brace/master/theme/pastel_on_dark.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>JSON2Dart</title>
 </head>
@@ -24,7 +29,6 @@
         
         <!-- header -->
         <header class=" topnav">
-            <!-- <h2>💎 Json2Dart</h2> -->
             <a class="topnavleft" href="#">
                 <svg width="22" height="22">
                     <image xlink:href="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Dart-logo-icon.svg" width="16"
@@ -48,9 +52,9 @@
 
                 <div class="divContainer jsonContainer">
                     <!-- JSON container -->
-                    <div class="origJsonContainer">
-                        <!-- Original JSON -->
-                        <div id="origJsonContainer" style="height: 100%"></div>
+                    <div class="jsoneditor">
+                        <!-- JSON EDITOR -->
+                        <div id="jsoneditor" style="height: 100%"></div>
                     </div>
                 </div>
                 <div class="divContainer inputsContainer">
@@ -181,7 +185,6 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.5.3/jsoneditor.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script src="js/highlight.pack.js"></script>

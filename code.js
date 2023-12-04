@@ -15,7 +15,7 @@
 // - handle dimensional array
 // - linesOutput (dart code output)
 
-$(function () {
+$(document).ready(function () {
   //initialization
   (function init() {
     showInfo = (info) => $(".info").show().html(info);
@@ -32,23 +32,21 @@ $(function () {
     };
 
     /// * create the editor
-    const container = document.getElementById("origJsonContainer");
+    const isDarkMode = document.body.classList.contains("dark-mode");
+    const container = document.getElementById("jsoneditor");
     const options = {
       mode: "code",
+      theme: isDarkMode ? "ace/theme/pastel_on_dark" : '',
       onChangeText: (str) => {
         $.cookie(jsonEditorCachekey, str);
         generate();
       },
     };
 
-    let editor;
     let resultDartCode = "";
-
-    try {
-      editor = new JSONEditor(container, options);
-    } catch {
-      showInfo("Load JSONEditor faild, please try reload");
-    }
+    let editor = new JSONEditor(container, options);
+    window.jsonEditor = editor;
+    
 
     function tab(count) {
       return "  ".repeat(count + 1);
@@ -92,11 +90,11 @@ $(function () {
           //https://dart.dev/guides/language/language-tour
           // prettier-ignore
           let reservedKeywords = [
-            "num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in",
-            "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null",
-            "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void",
-            "default", "get", "rethrow", "while", "deferred", "hide", "return", "with", "do", "if", "set", "yield",
-          ];
+              "num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in",
+              "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null",
+              "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void",
+              "default", "get", "rethrow", "while", "deferred", "hide", "return", "with", "do", "if", "set", "yield",
+            ];
 
           /// first index is number
           let isStartWithNum = key.match(/^\d/);

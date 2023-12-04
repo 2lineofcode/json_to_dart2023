@@ -121,7 +121,7 @@ body,
     flex: 1;
 }
 
-.origJsonContainer {
+.jsoneditor {
     flex: 1;
 }
 
@@ -214,4 +214,8 @@ p {
 
 .dark-mode .variable {
     color: rgb(168, 168, 245);
+}
+
+#jsoneditor {
+    background: white;
 }
