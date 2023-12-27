@@ -14,7 +14,6 @@
 // - toJson handle array
 // - handle dimensional array
 // - linesOutput (dart code output)
-
 $(document).ready(function () {
   //initialization
   (function init() {
@@ -91,27 +90,33 @@ $(document).ready(function () {
           //https://dart.dev/guides/language/language-tour
           // prettier-ignore
           let reservedKeywords = [
-              "num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", "else", "import", "static", "assert", "enum", "in",
-              "super", "async", "export", "interface", "switch", "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", "throw", "catch", "false", "new", "true", "class", "final", "null",
-              "try", "const", "finally", "on", "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void",
+              "num", "double", "int", "String", "bool", "List", "abstract", "dynamic", "implements", "show", "as", 
+              "else", "import", "static", "assert", "enum", "in", "super", "async", "export", "interface", "switch",
+              "await", "extends", "is", "sync", "break", "external", "library", "this", "case", "factory", "mixin", 
+              "throw", "catch", "false", "new", "true", "class", "final", "null", "try", "const", "finally", "on", 
+              "typedef", "continue", "for", "operator", "var", "covariant", "Function", "part", "void",
               "default", "get", "rethrow", "while", "deferred", "hide", "return", "with", "do", "if", "set", "yield",
             ];
 
           /// first index is number
           let isStartWithNum = key.match(/^\d/);
-          if (reservedKeywords.includes(key) || isStartWithNum) {
+          if (isStartWithNum) {
+            return `x${key}`;
+          }
+
+          /// reservedKeywords
+          if (reservedKeywords.includes(key)) {
             return `x${uppercaseFirst(key)}`;
           }
 
           /// first index is symbol
-          let isStartWithSymbol = key.match(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/);
-          if (reservedKeywords.includes(key) || isStartWithSymbol) {
-            return `x${uppercaseFirst(key.substring(1).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g, ""))}`;
+          if (/^[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/.test(key)) {
+            return `${uppercaseFirst(key).replaceAll(/[ `!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/g, "")}`;
           }
 
-          /// first index is _
-          if (key.startsWith("_")) {
-            return `x${uppercaseFirst(key)}`;
+          /// first index is `_`
+          if (key.charAt(0) === "_") {
+            return key.replaceAll("_", "");
           }
 
           /// all word is capital
@@ -131,7 +136,7 @@ $(document).ready(function () {
       };
 
       // ! Generic string generator
-      let genericStringGenerator = (innerClass, count) => {
+      let generateGenericString = (innerClass, count) => {
         let genericStrings = [innerClass];
         while (count) {
           genericStrings.unshift("List<");
@@ -187,7 +192,7 @@ $(document).ready(function () {
 
       // ! Get the array cycle sentence
       let getIterateLines = (arr, className, key, legalKey, jsonKey, shouldNullSafe) => {
-        if (legalKey == "data") legalKey = "data";
+        if (legalKey == "data") legalKey = "this.data";
 
         let { inner, innerClass, count } = getInnerObjInfo(arr, className);
 
@@ -246,7 +251,7 @@ $(document).ready(function () {
           if (typeof inner === "string" || typeof inner === "number" || typeof inner === "boolean") {
             if (count > 0) {
               let fprefix = ``;
-              fprefix += `${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : ${genericStringGenerator(innerClass, total)}.from(json[${jsonKey}]);\n`;
+              fprefix += `${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : ${generateGenericString(innerClass, total)}.from(json[${jsonKey}]);\n`;
               fromJsonLines.push(fprefix);
 
               let tPrefix = ``;
@@ -268,9 +273,9 @@ $(document).ready(function () {
           // ? array primitif
           if (typeof inner === "string" || typeof inner === "number" || typeof inner === "boolean") {
             if (isShouldEnhanceFaultTolerance) {
-              fromJsonLines.push(`${tab(1)}if (json[${jsonKey}] is List) {\n${tab(2)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n${tab(1)}}\n`);
+              fromJsonLines.push(`${tab(1)}if (json[${jsonKey}] is List) {\n${tab(2)}${legalKey} = json[${jsonKey}] == null ? null : List${generateGenericString(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n${tab(1)}}\n`);
             } else {
-              fromJsonLines.push(`${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : List${genericStringGenerator(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n`);
+              fromJsonLines.push(`${tab(1)}${legalKey} = json[${jsonKey}] == null ? null : List${generateGenericString(innerClass, total - count).slice(4)}.from(json[${jsonKey}]);\n`);
             }
           }
           // ? array object
@@ -367,7 +372,7 @@ $(document).ready(function () {
                 let { inner, innerClass, count } = getInnerObjInfo(element, subClassName);
                 let { fromJsonLinesJoined, toJsonLinesJoined } = getIterateLines(element, subClassName, key, legalKey, jsonKey, shouldNullSafe);
 
-                let genericString = genericStringGenerator(innerClass, count);
+                let genericString = generateGenericString(innerClass, count);
 
                 /// null safe in arraylist
                 if (shouldNullSafe) {

@@ -1,8 +1,16 @@
+/**
+ * Shows a snackbar element for a short duration.
+ */
 function showSnackbar() {
-  var x = document.getElementById("snackbar");
-  x.className = "show";
+  // Get the snackbar element != == <= >= === ! !! !!! -> <- --> <- <-- <=> ->> << >> <<> >>> && ||
+  const snackbar = document.getElementById("snackbar");
+
+  // Add the "show" class to display the snackbar
+  snackbar.classList.add("show");
+
+  // Remove the "show" class after a short delay
   setTimeout(function () {
-    x.className = x.className.replace("show", "");
+    snackbar.classList.remove("show");
   }, 1000);
 }
 
@@ -12,8 +20,8 @@ var icon = document.getElementById("modeIcon");
 
 function toggleDarkMode() {
   element.classList.toggle("dark-mode");
-  var isDarkMode = element.classList.contains("dark-mode");
-  document.cookie = "darkMode=" + isDarkMode + "; max-age=" + 365 * 24 * 60 * 60 + "; path=/";
+  const isDarkMode = element.classList.contains("dark-mode");
+  document.cookie = `darkMode=${isDarkMode}; max-age=${365 * 24 * 60 * 60}; path=/`;
 
   // update icon
   icon.classList.toggle("bi-sun-fill", isDarkMode);
@@ -27,29 +35,30 @@ function updateEditorTheme(isDarkMode) {
   const editor = window.jsonEditor;
   if (editor && editor.aceEditor) {
     const aceEditor = editor.aceEditor;
-    aceEditor.setTheme(isDarkMode ? "ace/theme/pastel_on_dark" : '');
+    const theme = isDarkMode ? "ace/theme/pastel_on_dark" : "";
+    aceEditor.setTheme(theme);
   }
 }
 
 $(document).ready(function () {
-  var darkModeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)darkMode\s*=\s*([^;]*).*$)|^.*$/, "$1");
+  // Retrieve the value of the darkMode cookie
+  var darkModeValue = document.cookie.replace(/(?:(?:^|.*;\s*)darkMode\s*=\s*([^;]*).*$)|^.*$/, "$1");
 
-  if (darkModeCookie) {
-    var isDarkMode = darkModeCookie === "true";
-    element.classList.toggle("dark-mode", isDarkMode);
-    icon.classList.toggle("bi-sun-fill", isDarkMode);
-    icon.classList.toggle("bi-moon-fill", !isDarkMode);
+  if (darkModeValue) {
+    var isDarkMode = darkModeValue === "true";
+    toggleClasses(isDarkMode);
 
     // Update the theme of the JSON editor based on dark mode status
     updateEditorTheme(isDarkMode);
-
   } else {
     const prefersDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (prefersDarkMode) {
-      element.classList.add("dark-mode");
-      icon.classList.add("bi-sun-fill");
-    } else {
-      icon.classList.add("bi-moon-fill");
-    }
+    toggleClasses(prefersDarkMode);
+  }
+
+  // Function to toggle classes based on dark mode status
+  function toggleClasses(isDarkMode) {
+    element.classList.toggle("dark-mode", isDarkMode);
+    icon.classList.toggle("bi-sun-fill", isDarkMode);
+    icon.classList.toggle("bi-moon-fill", !isDarkMode);
   }
 });
